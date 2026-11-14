@@ -1,0 +1,37 @@
+﻿@model HoangHaPCVN.Models.Product
+
+@{ 
+    //Ảnh: Chưa có thì dùng ảnh mặc định
+    string anh = string.IsNullOrEmpty(Model.ProductImage)
+        ? "~/Content/images/default_img.png"
+        : Model.ProductImage;
+
+    //Tổng số lượng đã bán = cộng só lượng ở các dòng chi tiết đơn hàng
+    int daBan = Model.OrderDetails.Sum(d => d.Quantity);
+
+    //Format theo định dạng VND
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+
+    //Link sang trang chi tiết SP
+    string linkChiTiet = Url.Action("ProductDetail", "Home", new { area = "", id = Model.ProductID });
+
+    <div class="ps-card">
+        <a href="@linkChiTiet" class="ps-thumb">
+            <img src="@Url.Content(anh)" alt="@Model.ProductName" />
+        </a>
+        <div class="ps-price">@Model.ProductPrice.ToString("N0", vn) đ</div>
+        <a href="@linkChiTiet" class="ps-name">@Model.ProductName</a>
+        <div class="ps-foot">
+            <span class="ps-stock">Đã bán: @daBan</span>
+
+            @* Tạm dùng giỏ hàng của teammate (ThemVaoGio). Bước 17 sẽ đổi sang CartController *@
+            <form action="@Url.Action("ThemVaoGio", "Home", new { area = "" })" method="post">
+                <input type="hidden" name="ten" value="@Model.ProductName" />
+                <input type="hidden" name="gia" value="@((long)Model.ProductPrice)" />
+                <input type="hidden" name="hinh" value="@Url.Content(anh)" />
+                <button type="submit" class="ps-add" title="Thêm vào giỏ hàng">+</button>
+            </form>
+        </div>
+    </div>
+}
+

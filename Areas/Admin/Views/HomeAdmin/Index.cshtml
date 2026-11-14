@@ -1,7 +1,104 @@
-﻿
+﻿@model HoangHaPCVN.Models.ViewModel.DashBoardVM
+
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Trang chủ quản trị";
 }
 
-<h2>Index</h2>
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary h-100">
+            <div class="card-body">
+                <div class="fs-6">Sản phẩm</div>
+                <div class="fs-2 fw-bold">@Model.TongSanPham</div>
+                @Html.ActionLink("Xem danh sách", "Index", "Products", null, new { @class = "text-white" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success h-100">
+            <div class="card-body">
+                <div class="fs-6">Danh mục</div>
+                <div class="fs-2 fw-bold">@Model.TongDanhMuc</div>
+                @Html.ActionLink("Xem danh sách", "Index", "Categories", null, new { @class = "text-white" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning h-100">
+            <div class="card-body">
+                <div class="fs-6">Khách hàng</div>
+                <div class="fs-2 fw-bold">@Model.TongKhachHang</div>
+                @Html.ActionLink("Xem danh sách", "Index", "Customers", null, new { @class = "text-dark" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-danger h-100">
+            <div class="card-body">
+                <div class="fs-6">Đơn hàng</div>
+                <div class="fs-2 fw-bold">@Model.TongDonHang</div>
+                @Html.ActionLink("Xem danh sách", "Index", "Orders", null, new { @class = "text-white" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    Doanh thu từ các đơn đã giao: <strong>@Model.DoanhThu.ToString("N0") đ</strong>
+</div>
+
+@* Google Chart *@
+<h2 class="bg-success text-white p-2">BIỂU ĐỒ THỐNG KÊ</h2>
+
+@if (Model.TongSanPham > 0)
+{
+    @* Google Chart sẽ vẽ biểu đồ vào thẻ div có id="bieuDoDanhMuc" *@
+    <div id="bieuDoDanhMuc" style="width: 100%; height: 450px;"></div>
+}
+else
+{
+    <p class="alert alert-warning">Chưa có sản phẩm nào để thống kê.</p>
+}
+
+@section scripts {
+    @* Thư viện Google Chart *@
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+        //Chuyển dữ liệu sang JavaScript dưới dạng JSON
+        var thongKe = @Html.Raw(Json.Encode(Model.SanPhamTheoDanhMuc))
+
+        //Nạp gói biểu đồ cơ bản, nạp xong thì gọi hàm veBieuDo
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(veBieuDo);
+
+        function veBieuDo() {
+            //Không có chỗ để vẽ (chưa có sản phẩm) thì dừng
+            var khungVe = document.getElementById('bieuDoDanhMuc');
+            if (!khungVe) {
+                return;
+            }
+
+            //Tạo bảng dữ liệu cho biểu đồ: cột 1 là tên, cột 2 là số
+            var duLieu = new google.visualization.DataTable();
+            duLieu.addColumn('string', 'Danh mục');
+            duLieu.addColumn('number', 'Số sản phẩm');
+
+            //Mỗi danh mục là 1 dòng, ứng với 1 miếng của chart
+            for (var i = 0; i < thongKe.length; i++) {
+                duLieu.addRow([thongKe[i].TenDanhMuc, thongKe[i].SoSanPham]);
+            }
+
+            //Tùy chỉnh chart
+            var tuyChon = {
+                title: 'TỶ LỆ SẢN PHẨM THEO DANH MỤC',
+                is3D: true   //3D chart
+            };
+
+            //Vẽ chart vào thẻ div
+            var bieuDo = new google.visualization.PieChart(khungVe);
+            bieuDo.draw(duLieu, tuyChon);
+        }
+    </script>
+}
 

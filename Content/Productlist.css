@@ -1,0 +1,117 @@
+﻿/* ===== TRANG DANH SÁCH SẢN PHẨM THEO DANH MỤC ===== */
+
+/* Đường dẫn: Trang chủ › Tên danh mục */
+.breadcrumb-bar {
+    margin: 0 10px 14px;
+    font-size: 14px;
+    color: #555;
+}
+
+    .breadcrumb-bar a {
+        color: #1565c0;
+    }
+
+    .breadcrumb-bar .sep {
+        margin: 0 6px;
+        color: #999;
+    }
+
+/* Bố cục 2 cột: menu bên trái, sản phẩm bên phải */
+.pl-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 10px;
+}
+
+    /* Ở trang chủ, chiều cao từng mục menu lấy theo banner bên cạnh.
+       Ở trang này không có banner nên cho mỗi mục một khoảng đệm cố định */
+    .pl-layout .sidebar a {
+        padding: 12px 20px;
+    }
+
+/* Danh mục đang xem được tô sáng */
+.sidebar li.active a {
+    background-color: #eaf2ff;
+    color: #1a5cff;
+}
+
+/* Khung danh sách sản phẩm */
+.pl-content {
+    flex: 1;
+    min-width: 0;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+/* Tiêu đề danh mục và số sản phẩm */
+.pl-toolbar {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pl-title {
+    margin: 0;
+    font-size: 22px;
+    color: #0b3d91;
+}
+
+.pl-count {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Các nút sắp xếp */
+.pl-sort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+    .pl-sort a {
+        padding: 6px 12px;
+        border: 1px solid #d0d7e2;
+        border-radius: 16px;
+        color: #333;
+    }
+
+        .pl-sort a:hover {
+            border-color: #1565c0;
+            color: #1565c0;
+        }
+
+        /* Nút sắp xếp đang chọn */
+        .pl-sort a.active {
+            background-color: #1565c0;
+            border-color: #1565c0;
+            color: #fff;
+        }
+
+/* Lưới sản phẩm: 4 ô một hàng (vì có menu chiếm chỗ bên trái) */
+.pl-content .ps-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Màn hình nhỏ: menu lên trên, sản phẩm xuống dưới, 2 ô một hàng */
+@media (max-width: 992px) {
+    .pl-layout {
+        flex-direction: column;
+    }
+
+        .pl-layout .sidebar {
+            width: 100%;
+        }
+
+    .pl-content .ps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

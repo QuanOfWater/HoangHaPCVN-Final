@@ -20,12 +20,13 @@
                     <img src="~/Content/img/LogoHHPC.png" alt="Hoàng Hà PC">
                 </a>
 
-                <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Nhập từ khóa tìm kiếm" maxlength="100" />
-                    <button id="search-button">
+                <form class="search-box" action="@Url.Action("Index", "Home", new { area = "" })" method="get">
+                    <input type="text" id="search-input" name="searchTerm" value="@Request.QueryString["searchTerm"]"
+                           placeholder="Nhập từ khóa tìm kiếm" maxlength="50" />
+                    <button type="submit" id="search-button">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                </div>
+                </form>
 
                 <div class="top-right">
                     <!-- Hotline: bấm vào thì mở popup #hotline -->

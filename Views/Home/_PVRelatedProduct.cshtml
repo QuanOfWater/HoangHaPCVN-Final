@@ -1,0 +1,15 @@
+﻿@model HoangHaPCVN.Models.ViewModel.ProductDetailVM
+
+@* SP tương tự, cùng danh mục và slider *@
+@if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+{
+    <div class="pd-related">
+        <h3 class="pd-section-title">Sản phẩm tương tự</h3>
+        <div class="ps-slider">
+            @foreach (var p in Model.RelatedProducts)
+            {
+                @Html.Partial("_PVProductCard", p)
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,23 @@
+﻿@model IEnumerable<HoangHaPCVN.Models.Category>
+@* Mã danh mục đang xem hiện tại (nếu không có thì null) để tô sáng nổi bật trong menu *@
+@{ int? activeId = ViewBag.ActiveId as int?;
+        }
+
+
+@* Menu danh mục sản phẩm, lấy từ bảng Category.
+    Giữ đúng cấu trúc HTML và class của sidebar cũ để dùng lại CSS trong home.css *@
+<aside class="sidebar">
+    <ul>
+        @foreach (var c in Model)
+        {
+            //Dùng icon mặc định nếu danh mục đó chưa có
+            string icon = string.IsNullOrEmpty(c.CategoryIcon) ? "fa-solid fa-list" : c.CategoryIcon;
+
+            <li class="@(activeId == c.CategoryID ? "active" : "")">
+                <a href="@Url.Action("ProductList", "Home", new { area = "", id = c.CategoryID })">
+                    <span class="icon"><i class="@icon"></i></span> @c.CategoryName <span class="arrow">›</span>
+                </a>
+            </li>
+        }
+    </ul>
+</aside>

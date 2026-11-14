@@ -1,0 +1,68 @@
+﻿@model HoangHaPCVN.Models.ViewModel.ProductListVM
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = Model.CategoryName;
+}
+
+@section styles {
+    <link href="~/Content/home.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <link href="~/Content/productlist.css" rel="stylesheet" />
+}
+
+@* Breadcrumb *@
+<div class="breadcrumb-bar">
+    <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <span class="sep">›</span>
+    <span>@Model.CategoryName</span>
+</div>
+
+<div class="pl-layout">
+    @* Menu bên trái, làm nổi bật danh mục đang xem *@
+    @Html.Action("CategoriesMenu", "Home", new { area = "", activeId = Model.CategoryID })
+
+    @* Danh sách SP bên phải *@
+    <div class="pl-content" id="ds-san-pham">
+
+        <div class="pl-toolbar">
+            <h1 class="pl-title">@Model.CategoryName</h1>
+            <span class="pl-count">@Model.Products.TotalItemCount sản phẩm</span>
+        </div>
+
+        @* Tùy chọn sort, nút đang chọn có class="active" *@
+        <div class="pl-sort">
+            <span>Sắp xếp:</span>
+            <a href="@Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID })#ds-san-pham"
+               class="@(string.IsNullOrEmpty(Model.SortOrder) ? "active" : "")">Mới nhất</a>
+            <a href="@Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID, sortOrder = "bestseller" })#ds-san-pham"
+               class="@(Model.SortOrder == "bestseller" ? "active" : "")">Bán chạy</a>
+            <a href="@Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID, sortOrder = "price_asc" })#ds-san-pham"
+               class="@(Model.SortOrder == "price_asc" ? "active" : "")">Giá tăng dần</a>
+            <a href="@Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID, sortOrder = "price_desc" })#ds-san-pham"
+               class="@(Model.SortOrder == "price_desc" ? "active" : "")">Giá giảm dần</a>
+            <a href="@Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID, sortOrder = "name_asc" })#ds-san-pham"
+               class="@(Model.SortOrder == "name_asc" ? "active" : "")">Tên A → Z</a>
+        </div>
+
+        @if (Model.Products.Any())
+        {
+            <div class="ps-grid">
+                @foreach (var p in Model.Products)
+                {
+                    @Html.Partial("_PVProductCard", p)
+                }
+            </div>
+
+            //Phân trang: Giữ nguyên danh mục và cách sắp xếp
+            <div class="pager-wrap">
+                @Html.PagedListPager(Model.Products, page =>
+                    Url.Action("ProductList", "Home", new { area = "", id = Model.CategoryID, sortOrder = Model.SortOrder, page }) + "#ds-san-pham")
+            </div>
+        }
+        else
+        {
+            <p class="empty-note">Danh mục này chưa có sản phẩm.</p>
+        }
+    </div>
+</div>

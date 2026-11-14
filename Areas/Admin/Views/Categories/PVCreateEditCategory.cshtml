@@ -8,6 +8,17 @@
         new { @class = "text-danger" })
 </div>
 
+@* Ô nhập biểu tượng Font Awesome cho danh mục *@
+<div class="mb-3">
+    <label class="form-label fw-bold">Biểu tượng (class Font Awesome)</label>
+    @Html.EditorFor(model => model.CategoryIcon,
+        new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: fa-solid fa-microchip" } })
+    <div class="form-text">
+        Tìm biểu tượng tại fontawesome.com/icons (chọn loại Free), chép phần class, ví dụ <code>fa-solid fa-fan</code>.
+        Để trống thì dùng biểu tượng mặc định.
+    </div>
+</div>
+
 <div class="mb-3">
     <input type="submit" value="Lưu" class="btn btn-primary" />
     @Html.ActionLink("Quay lại danh sách", "Index", null,

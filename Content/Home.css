@@ -486,3 +486,60 @@
 .ps-foot form {
     margin: 0;
 }
+
+/* Slider "Sản phẩm bán chạy": 1 hàng ngang, kéo thanh cuộn để xem tiếp */
+.ps-slider {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto; /* có thanh cuộn ngang */
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+}
+
+    .ps-slider .ps-card {
+        flex: 0 0 calc((100% - 5 * 14px) / 6); /* vừa 6 ô trên 1 hàng */
+        scroll-snap-align: start;
+    }
+
+@media (max-width: 1200px) {
+    .ps-slider .ps-card {
+        flex-basis: calc((100% - 3 * 14px) / 4); /* màn hình nhỏ: 4 ô */
+    }
+}
+
+@media (max-width: 768px) {
+    .ps-slider .ps-card {
+        flex-basis: calc((100% - 14px) / 2); /* điện thoại: 2 ô */
+    }
+}
+
+/* Khoảng cách giữa các khối sản phẩm */
+.ps-section {
+    margin-bottom: 28px;
+}
+
+/* Dòng kết quả tìm kiếm */
+.search-result {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+}
+
+    .search-result a {
+        margin-left: 10px;
+        color: #1565c0;
+        text-decoration: underline;
+    }
+
+/* Thông báo khi không có sản phẩm */
+.empty-note {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 14px 18px;
+}
+
+/* Thanh phân trang */
+.pager-wrap {
+    margin-top: 14px;
+}

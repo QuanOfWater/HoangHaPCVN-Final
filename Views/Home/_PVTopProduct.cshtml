@@ -1,0 +1,36 @@
+﻿@model HoangHaPCVN.Models.ViewModel.ProductDetailVM
+@using PagedList.Mvc
+
+@{
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+@* Bán chạy cùng một danh mục (3 SP / trang) *@
+<div class="pd-box" id="top-ban-chay">
+    <h3 class="pd-section-title pd-section-title-first">Bán chạy cùng danh mục</h3>
+
+    @if (Model.TopProducts.Any())
+    {
+        foreach (var p in Model.TopProducts)
+        {
+            string anh = string.IsNullOrEmpty(p.ProductImage) ? "~/Content/images/default_img.png" : p.ProductImage;
+
+            <a href="@Url.Action("ProductDetail", "Home", new { area = "", id = p.ProductID })" class="pd-top-item">
+                <img src="@Url.Content(anh)" alt="@p.ProductName" />
+                <div>
+                    <div class="pd-top-name">@p.ProductName</div>
+                    <div class="pd-top-price">@p.ProductPrice.ToString("N0", vn) đ</div>
+                </div>
+            </a>
+        }
+
+        <div class="pager-wrap">
+            @Html.PagedListPager(Model.TopProducts, page =>
+                Url.Action("ProductDetail", "Home", new { area = "", id = Model.Product.ProductID, quantity = Model.Quantity, page }) + "#top-ban-chay")
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">Chưa có sản phẩm khác trong danh mục này.</p>
+    }
+</div>

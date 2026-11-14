@@ -53,7 +53,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         //Nhận dữ liệu từ form và lưu danh mục mới vào DB
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CategoryID,CategoryName")] Category category)
+        public ActionResult Create([Bind(Include = "CategoryID,CategoryName,CategoryIcon")] Category category)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         //Nhận dữ liệu đã sửa và cập nhập lại vào DB
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CategoryID,CategoryName")] Category category)
+        public ActionResult Edit([Bind(Include = "CategoryID,CategoryName,CategoryIcon")] Category category)
         {
             if (ModelState.IsValid)
             {

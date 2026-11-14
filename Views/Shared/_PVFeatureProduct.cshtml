@@ -1,0 +1,22 @@
+﻿@model HoangHaPCVN.Models.ViewModel.HomeProductVM
+
+@* SP bán chạy (cho vào slider, top 10 SP) *@
+<section class="ps-section">
+    <div class="ps-head">
+        <span class="ps-title">Sản phẩm bán chạy</span>
+    </div>
+
+    @if (Model.FeaturedProducts.Any())
+    {
+        <div class="ps-slider">
+            @foreach (var p in Model.FeaturedProducts)
+            {
+                @Html.Partial("_PVProductCard", p)
+            }
+        </div>
+    }
+    else
+    {
+        <p class="empty-note">Không tìm thấy sản phẩm phù hợp.</p>
+    }
+</section>

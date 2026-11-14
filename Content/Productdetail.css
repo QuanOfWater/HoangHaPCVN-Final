@@ -1,0 +1,225 @@
+﻿/* ===== TRANG CHI TIẾT SẢN PHẨM ===== */
+
+/* Bố cục 3 cột: ảnh | thông tin | mua hàng */
+.pd-layout {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+    padding: 0 10px;
+}
+
+/* Khung trắng bo góc dùng chung */
+.pd-box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+/* Ảnh sản phẩm: khung vuông, ảnh nằm gọn bên trong */
+.pd-image img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+}
+
+/* Tên, thông tin phụ, giá */
+.pd-name {
+    margin: 0 0 8px;
+    font-size: 22px;
+    line-height: 1.35;
+    color: #1a1a1a;
+}
+
+.pd-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+    .pd-meta a {
+        color: #1565c0;
+    }
+
+.pd-price {
+    margin: 8px 0 4px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #e53935;
+}
+
+/* Tiêu đề các phần nhỏ: Mô tả, Sản phẩm tương tự... */
+.pd-section-title {
+    margin: 18px 0 10px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0b3d91;
+}
+
+/* Tiêu đề nằm đầu khung thì không cần đường kẻ phía trên */
+.pd-section-title-first {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* Mô tả: giữ nguyên các lần xuống dòng khi nhập ở Admin */
+.pd-desc {
+    white-space: pre-line;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Slider sản phẩm tương tự: mỗi ô rộng cố định vì cột giữa hẹp hơn trang chủ */
+.pd-related .ps-slider .ps-card {
+    flex: 0 0 180px;
+}
+
+/* Cột bên phải */
+.pd-side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Phần chọn mua */
+.pd-buy label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+.pd-qty {
+    display: flex;
+    gap: 8px;
+}
+
+    .pd-qty input {
+        width: 90px;
+        height: 40px;
+        padding: 0 10px;
+        border: 1px solid #d0d7e2;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+.pd-btn-outline {
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #1565c0;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #1565c0;
+    cursor: pointer;
+}
+
+    .pd-btn-outline:hover {
+        background-color: #eaf2ff;
+    }
+
+.pd-subtotal {
+    margin: 14px 0;
+    font-size: 15px;
+}
+
+    .pd-subtotal strong {
+        font-size: 20px;
+        color: #e53935;
+    }
+
+.pd-btn-primary {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 8px;
+    background-color: #e53935;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .pd-btn-primary:hover {
+        background-color: #c62828;
+    }
+
+/* Danh sách bán chạy dạng gọn: ảnh nhỏ bên trái, tên và giá bên phải */
+.pd-top-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #1a1a1a;
+}
+
+    .pd-top-item:hover .pd-top-name {
+        color: #1565c0;
+    }
+
+    .pd-top-item img {
+        flex-shrink: 0;
+        width: 64px;
+        height: 64px;
+        object-fit: contain;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+    }
+
+.pd-top-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;        /* tên dài thì chỉ hiện 2 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pd-top-price {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ff5722;
+}
+
+/* Màn hình nhỏ: 3 cột xếp thành 1 cột */
+@media (max-width: 1100px) {
+    .pd-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Nút - / + cạnh ô số lượng (hiện khi có JavaScript) ===== */
+.pd-qty-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d0d7e2;
+    border-radius: 6px;
+    background-color: #f5f7fb;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .pd-qty-btn:hover {
+        border-color: #1565c0;
+        background-color: #eaf2ff;
+        color: #1565c0;
+    }
+
+/* Số trong ô số lượng nằm giữa, ô hẹp lại cho vừa hàng với 2 nút */
+.pd-qty input {
+    width: 70px;
+    text-align: center;
+}
+
+/* Thẻ có thuộc tính hidden thì luôn ẩn, kể cả khi đã có CSS display khác */
+[hidden] {
+    display: none !important;
+}
