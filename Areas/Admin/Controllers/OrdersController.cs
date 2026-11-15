@@ -13,7 +13,7 @@ using HoangHaPCVN.Areas.Admin.Filters;
 namespace HoangHaPCVN.Areas.Admin.Controllers
 {
     [AdminAuthorize]
-    public class OrderController : Controller
+    public class OrdersController : Controller
     {
         private HoangHaPCVNEntities db = new HoangHaPCVNEntities();
 

@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    // Số sản phẩm trong giỏ để hiện trên icon giỏ hàng
+    var gioHangHeader = Session["Cart"] as HoangHaPCVN.Models.ViewModel.Cart;
+    int soLuongGio = gioHangHeader == null ? 0 : gioHangHeader.TotalQuantity();
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -40,9 +46,9 @@
                         <span>Hệ Thống<br />Showroom</span>
                     </a>
 
-                    <a href="@Url.Action("GioHang", "Home")" class="top-item">
+                    <a href="@Url.Action("Index", "Cart", new { area = "" })" class="top-item">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-number" id="cart-number">0</span>
+                        <span class="cart-number" id="cart-number">@soLuongGio</span>
                         <span>Giỏ <br />Hàng</span>
                     </a>
 

@@ -1,0 +1,22 @@
+﻿@model HoangHaPCVN.Models.ViewModel.Cart
+@using PagedList.Mvc
+
+@* Sản phẩm tương tự (cùng danh mục với sản phẩm trong giỏ) *@
+@if (Model.SimilarProducts != null && Model.SimilarProducts.Any())
+{
+    <section class="ps-section cart-similar" id="sp-tuong-tu">
+        <div class="ps-head">
+            <span class="ps-title">Sản phẩm tương tự</span>
+        </div>
+        <div class="ps-grid">
+            @foreach (var p in Model.SimilarProducts)
+            {
+                @Html.Partial("_PVProductCard", p)
+            }
+        </div>
+        <div class="pager-wrap">
+            @Html.PagedListPager(Model.SimilarProducts, page =>
+                Url.Action("Index", "Cart", new { area = "", page }) + "#sp-tuong-tu")
+        </div>
+    </section>
+}

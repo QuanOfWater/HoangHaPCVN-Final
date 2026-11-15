@@ -24,11 +24,11 @@
         <div class="ps-foot">
             <span class="ps-stock">Đã bán: @daBan</span>
 
-            @* Tạm dùng giỏ hàng của teammate (ThemVaoGio). Bước 17 sẽ đổi sang CartController *@
-            <form action="@Url.Action("ThemVaoGio", "Home", new { area = "" })" method="post">
-                <input type="hidden" name="ten" value="@Model.ProductName" />
-                <input type="hidden" name="gia" value="@((long)Model.ProductPrice)" />
-                <input type="hidden" name="hinh" value="@Url.Content(anh)" />
+            @* Thêm 1 sản phẩm vào giỏ hàng *@
+            <form action="@Url.Action("AddToCart", "Cart", new { area = "" })" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productId" value="@Model.ProductID" />
+                <input type="hidden" name="quantity" value="1" />
                 <button type="submit" class="ps-add" title="Thêm vào giỏ hàng">+</button>
             </form>
         </div>
