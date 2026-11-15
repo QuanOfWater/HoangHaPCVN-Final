@@ -93,10 +93,10 @@ namespace HoangHaPCVN.Controllers
                     //1 bản ghi thông tin khách hàng trong bảng Customer
                     var customer = new Customer
                     {
-                        CustomerName = model.CustomerName,
+                        CustomerName = model.CustomerName.Trim(),
                         CustomerPhone = model.CustomerPhone,
-                        CustomerEmail = model.CustomerEmail,
-                        CustomerAddress = model.CustomerAddress,
+                        CustomerEmail = model.CustomerEmail.Trim(),
+                        CustomerAddress = model.CustomerAddress.Trim(),
                         Username = model.Username
                     };
                     db.Users.Add(user);
@@ -104,10 +104,10 @@ namespace HoangHaPCVN.Controllers
                     //1 lần SaveChanges: EF lưu cả 2 bảng trong cùng 1 giao dịch (lỗi thì không bảng nào bị lưu)
                     db.SaveChanges();
 
-                    //Đăng ký xong thì đăng nhập luôn (CustomerID đã có sau SaveChanges)
-                    LuuDangNhap(user, customer);
-                    TempData["AccountMessage"] = "Đăng ký thành công! Chào mừng " + customer.CustomerName + ".";
-                    return QuayLai(returnUrl);
+                    //Đăng ký xong chuyển sang trang "Đăng nhập" và điền sẵn tên đăng nhập
+                    TempData["AccountMessage"] = "Đăng ký thành công! Vui lòng đăng nhập bằng tài khoản vừa tạo.";
+                    TempData["NewUsername"] = user.Username;
+                    return RedirectToAction("Login", new { returnUrl = returnUrl });
                 }
             }
 
@@ -124,7 +124,8 @@ namespace HoangHaPCVN.Controllers
                 return QuayLai(returnUrl);
             }
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            //Vừa đăng ký xong thì điền sẵn tên đăng nhập
+            return View(new LoginVM { Username = TempData["NewUsername"] as string });
         }
 
         // POST: Account/Login
@@ -189,10 +190,10 @@ namespace HoangHaPCVN.Controllers
 
             if (ModelState.IsValid)
             {
-                customer.CustomerName = model.CustomerName;
+                customer.CustomerName = model.CustomerName.Trim();
                 customer.CustomerPhone = model.CustomerPhone;
-                customer.CustomerEmail = model.CustomerEmail;
-                customer.CustomerAddress = model.CustomerAddress;
+                customer.CustomerEmail = model.CustomerEmail.Trim();
+                customer.CustomerAddress = model.CustomerAddress.Trim();
                 db.SaveChanges();
 
                 Session["CustomerName"] = customer.CustomerName; //Header đổi tên theo

@@ -16,6 +16,7 @@ namespace HoangHaPCVN.Models.ViewModel
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu mới")]
         [StringLength(50, MinimumLength = 6, ErrorMessage = "Mật khẩu từ 6 đến 50 ký tự")]
+        [RegularExpression(@"^\S+$", ErrorMessage = "Mật khẩu không được chứa khoảng trắng")]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu mới")]
         public string NewPassword { get; set; }

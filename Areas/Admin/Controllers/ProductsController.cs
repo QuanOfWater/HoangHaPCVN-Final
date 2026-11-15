@@ -99,6 +99,21 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             return View(product);
         }
 
+        //Trả về lý do không được xóa sản phẩm (null = được xóa)
+        private string LyDoKhongXoa(Product product)
+        {
+            int soDon = db.OrderDetails
+                .Where(d => d.ProductID == product.ProductID)
+                .Select(d => d.OrderID)
+                .Distinct()
+                .Count();
+            if (soDon > 0)
+            {
+                return "Sản phẩm đã có trong " + soDon + " đơn hàng. Sản phẩm đã bán phải được giữ lại để các đơn hàng cũ hiển thị đúng.";
+            }
+            return null;
+        }
+
         // GET: Admin/Products/Create
         public ActionResult Create()
         {
@@ -190,6 +205,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.LyDoKhongXoa = LyDoKhongXoa(product);
             return View(product);
         }
 
@@ -199,6 +215,15 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Product product = db.Products.Find(id);
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+            //Kiểm tra lại ở server: Đã có trong đơn thì quay về trang Delete để hiện lý do
+            if (LyDoKhongXoa(product) != null)
+            {
+                return RedirectToAction("Delete", new { id = id });
+            }
             db.Products.Remove(product);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -215,7 +240,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
 
         private void LuuAnh(Product product)
         {
-            // Chỉ chấp nhận các đuôi file ảnh này
+            //Chỉ chấp nhận các đuôi file ảnh này
             string[] duoiHopLe = { ".png", ".jpg", ".jpeg", ".gif" };
             string duoiFile = Path.GetExtension(product.UploadImg.FileName).ToLower();
             if (!duoiHopLe.Contains(duoiFile))

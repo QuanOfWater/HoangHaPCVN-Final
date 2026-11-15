@@ -40,6 +40,36 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             return View(category); //Mở view và gửi dữ liệu từ Category sang. Bên view dữ liệu này gọi là Model
         }
 
+        //Kiểm tra thêm ngoài Data Annotation: bỏ khoảng trắng thừa, không cho trùng tên danh mục
+        private void KiemTraDanhMuc(Category category)
+        {
+            if (!string.IsNullOrWhiteSpace(category.CategoryName))
+            {
+                category.CategoryName = category.CategoryName.Trim();
+                bool trungTen = db.Categories.Any(c => c.CategoryName == category.CategoryName
+                                                    && c.CategoryID != category.CategoryID);
+                if (trungTen)
+                {
+                    ModelState.AddModelError("CategoryName", "Đã có danh mục tên này");
+                }
+            }
+            if (category.CategoryIcon != null)
+            {
+                category.CategoryIcon = category.CategoryIcon.Trim();
+            }
+        }
+
+        //Trả về lý do không được xóa danh mục (null = được xóa)
+        private string LyDoKhongXoa(Category category)
+        {
+            int soSanPham = db.Products.Count(p => p.CategoryID == category.CategoryID);
+            if (soSanPham > 0)
+            {
+                return "Danh mục đang có " + soSanPham + " sản phẩm. Hãy chuyển các sản phẩm sang danh mục khác hoặc xóa chúng trước.";
+            }
+            return null;
+        }
+
         // GET: Admin/Categories/Create
         //Hiện ra form thêm danh mục (trống)
         public ActionResult Create()
@@ -55,6 +85,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CategoryID,CategoryName,CategoryIcon")] Category category)
         {
+            KiemTraDanhMuc(category);
             if (ModelState.IsValid)
             {
                 db.Categories.Add(category); //Đưa vào danh sách chờ thêm
@@ -80,6 +111,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "CategoryID,CategoryName,CategoryIcon")] Category category)
         {
+            KiemTraDanhMuc(category);
             if (ModelState.IsValid)
             {
                 db.Entry(category).State = EntityState.Modified; //Đánh dấu bản ghi đã sửa
@@ -90,19 +122,36 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         }
 
         // GET: Admin/Categories/Delete/5
-        //Tương tự với Edit, gọi lại Details vì giống
         public ActionResult Delete(int? id)
         {
-            return Details(id);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Category category = db.Categories.Find(id);
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.LyDoKhongXoa = LyDoKhongXoa(category);
+            return View(category);
         }
 
         // POST: Admin/Categories/Delete/5
-        //Xóa sau khi user ấn nút "Xóa"
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = db.Categories.Find(id);
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
+            //Kiểm tra lại ở server: Còn sản phẩm thì quay về trang Delete để hiện lý do
+            if (LyDoKhongXoa(category) != null)
+            {
+                return RedirectToAction("Delete", new { id = id });
+            }
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");
