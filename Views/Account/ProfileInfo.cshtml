@@ -1,0 +1,87 @@
+﻿@model HoangHaPCVN.Models.ViewModel.ProfileVM
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+}
+
+@section styles {
+    <link href="~/Content/Productlist.css" rel="stylesheet" />
+    <link href="~/Content/Account.css" rel="stylesheet" />
+}
+
+<div class="breadcrumb-bar">
+    <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <span class="sep">›</span>
+    <span>Thông tin tài khoản</span>
+</div>
+
+<div class="account-layout">
+    <!-- Cột trái: menu tài khoản -->
+    <aside class="account-side">
+        <div class="account-user">
+            <div class="account-avatar"><i class="fa-regular fa-user"></i></div>
+            <div>
+                <small>Tài khoản của</small>
+                <strong>@Session["CustomerName"]</strong>
+            </div>
+        </div>
+        <nav class="account-menu">
+            <a href="@Url.Action("ProfileInfo", "Account")" class="active"><i class="fa-solid fa-user"></i> Thông tin tài khoản</a>
+            <a href="@Url.Action("MyOrder", "Order")"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
+            <form action="@Url.Action("Logout", "Account")" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Cột phải: thông tin cá nhân + đổi mật khẩu -->
+    <section class="account-main">
+        <h1>Thông tin tài khoản</h1>
+
+        <div class="account-cards">
+            <div class="account-card">
+                <h2>Thông tin cá nhân</h2>
+                @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="account-form-row">
+                        <label class="account-label">Tên đăng nhập</label>
+                        <!-- không có name => không gửi lên server, chỉ để xem -->
+                        <input class="account-input" value="@Model.Username" readonly />
+                    </div>
+                    <div class="account-form-row">
+                        @Html.LabelFor(m => m.CustomerName, new { @class = "account-label" })
+                        @Html.TextBoxFor(m => m.CustomerName, new { @class = "account-input", autocomplete = "name" })
+                        @Html.ValidationMessageFor(m => m.CustomerName)
+                    </div>
+                    <div class="account-form-row">
+                        @Html.LabelFor(m => m.CustomerPhone, new { @class = "account-label" })
+                        @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "account-input", type = "tel", maxlength = "10", autocomplete = "tel" })
+                        @Html.ValidationMessageFor(m => m.CustomerPhone)
+                    </div>
+                    <div class="account-form-row">
+                        @Html.LabelFor(m => m.CustomerEmail, new { @class = "account-label" })
+                        @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "account-input", type = "email", autocomplete = "email" })
+                        @Html.ValidationMessageFor(m => m.CustomerEmail)
+                    </div>
+                    <div class="account-form-row">
+                        @Html.LabelFor(m => m.CustomerAddress, new { @class = "account-label" })
+                        @Html.TextBoxFor(m => m.CustomerAddress, new { @class = "account-input", autocomplete = "street-address" })
+                        @Html.ValidationMessageFor(m => m.CustomerAddress)
+                    </div>
+                    <button type="submit" class="account-btn">Lưu thay đổi</button>
+                }
+            </div>
+
+            <div class="account-card">
+                <h2>Đổi mật khẩu</h2>
+                @Html.Partial("_PVChangePassword", new HoangHaPCVN.Models.ViewModel.ChangePasswordVM())
+            </div>
+        </div>
+    </section>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

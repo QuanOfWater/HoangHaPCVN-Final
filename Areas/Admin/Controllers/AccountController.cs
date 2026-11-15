@@ -64,7 +64,8 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         // GET: Admin/Account/Logout
         public ActionResult Logout()
         {
-            Session.Clear(); //Xóa thông tin trong session
+            Session.Remove("Username"); //Chỉ xóa thông tin đăng nhập, giữ giỏ hàng
+            Session.Remove("UserRole");
             FormsAuthentication.SignOut(); //Xóa cookie xác thực
             return RedirectToAction("Login");
         }

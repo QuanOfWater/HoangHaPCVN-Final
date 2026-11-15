@@ -1,7 +1,13 @@
 ﻿@{
-    // Số sản phẩm trong giỏ để hiện trên icon giỏ hàng
+    //Thông tin góc phải header (PersonalMenuVM)
     var gioHangHeader = Session["Cart"] as HoangHaPCVN.Models.ViewModel.Cart;
-    int soLuongGio = gioHangHeader == null ? 0 : gioHangHeader.TotalQuantity();
+    var pm = new HoangHaPCVN.Models.ViewModel.PersonalMenuVM
+    {
+        IsLoggedIn = Session["UserRole"] as string == "Customer" && Session["CustomerID"] != null,
+        Username = Session["Username"] as string,
+        CustomerName = Session["CustomerName"] as string,
+        CartCount = gioHangHeader == null ? 0 : gioHangHeader.TotalQuantity()
+    };
 }
 
 <!DOCTYPE html>
@@ -48,22 +54,45 @@
 
                     <a href="@Url.Action("Index", "Cart", new { area = "" })" class="top-item">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-number" id="cart-number">@soLuongGio</span>
+                        <span class="cart-number" id="cart-number">@pm.CartCount</span>
                         <span>Giỏ <br />Hàng</span>
                     </a>
 
                     <!-- Đăng nhập: rê chuột vào thì hiện ô, bấm vào thì mở popup #login -->
-                    <div class="login-wrap">
-                        <a href="#login" class="login-button">
-                            <i class="fa-regular fa-user"></i>
-                            <span>Đăng <br />Nhập</span>
-                        </a>
-                        <div class="login-hover-box">
-                            <p>Xin chào, vui lòng đăng nhập để nhận nhiều ưu đãi hơn</p>
-                            <a href="#login" class="hover-btn hover-btn-primary">Đăng nhập</a>
-                            <a href="#register" class="hover-btn hover-btn-outline">Đăng ký</a>
+                    @if (pm.IsLoggedIn)
+                    {
+                        <!-- Đã đăng nhập: nút hiện tên, rê chuột thì hiện menu tài khoản -->
+                        <div class="login-wrap">
+                            <a href="@Url.Action("ProfileInfo", "Account", new { area = "" })" class="login-button">
+                                <i class="fa-regular fa-user"></i>
+                                <span>Xin chào<br /><span class="login-name">@pm.CustomerName</span></span>
+                            </a>
+                            <div class="login-hover-box">
+                                <p>Xin chào, <strong>@pm.CustomerName</strong></p>
+                                <a href="@Url.Action("ProfileInfo", "Account", new { area = "" })" class="hover-btn hover-btn-primary">Thông tin tài khoản</a>
+                                <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="hover-btn hover-btn-outline">Đơn hàng của tôi</a>
+                                <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="hover-btn hover-btn-outline hover-btn-logout">Đăng xuất</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <!-- Chưa đăng nhập: rê chuột vào thì hiện ô, bấm vào thì mở popup #login -->
+                        <div class="login-wrap">
+                            <a href="#login" class="login-button">
+                                <i class="fa-regular fa-user"></i>
+                                <span>Đăng <br />Nhập</span>
+                            </a>
+                            <div class="login-hover-box">
+                                <p>Xin chào, vui lòng đăng nhập để nhận nhiều ưu đãi hơn</p>
+                                <a href="#login" class="hover-btn hover-btn-primary">Đăng nhập</a>
+                                <a href="#register" class="hover-btn hover-btn-outline">Đăng ký</a>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -81,6 +110,10 @@
     <!-- ===================== NỘI DUNG TỪNG TRANG ===================== -->
     <!-- Nội dung của view (Index.cshtml, CPU.cshtml...) sẽ được chèn vào đây -->
     <main class="page-main">
+        @if (TempData["AccountMessage"] != null)
+        {
+            <div class="site-alert"><i class="fa-solid fa-circle-check"></i> @TempData["AccountMessage"]</div>
+        }
         @RenderBody()
     </main>
 
@@ -213,83 +246,99 @@
         </div>
     </div>
 
+    @if (!pm.IsLoggedIn)
+    {
+        <!-- ===================== POPUP ĐĂNG NHẬP ===================== -->
+        <div id="login" class="popup">
+            <a href="#" class="popup-overlay"></a>
 
-    <!-- ===================== POPUP ĐĂNG NHẬP ===================== -->
-    <div id="login" class="popup">
-        <a href="#" class="popup-overlay"></a>
-
-        <div class="popup-box auth-popup">
-            <div class="auth-left">
-                <img src="~/Content/img/DangNhapPopup.png" alt="Mua sắm tại Hoàng Hà PC">
-            </div>
-
-            <div class="auth-right">
-                <a href="#" class="popup-close"><i class="fa-solid fa-xmark"></i></a>
-
-                <h2>Đăng nhập bằng Email</h2>
-                <p class="auth-sub"><a href="#register" class="auth-link">Đăng ký</a> nếu chưa có tài khoản.</p>
-
-                <form action="#">
-                    <div class="auth-field">
-                        <input type="email" placeholder="Email">
-                    </div>
-                    <div class="auth-field">
-                        <input type="password" placeholder="Mật khẩu">
-                        <i class="fa-regular fa-eye auth-eye"></i>
-                    </div>
-                    <a href="#" class="auth-forgot">Quên mật khẩu ?</a>
-                    <button type="submit" class="auth-submit">Đăng nhập</button>
-                </form>
-
-                <p class="auth-or">- Hoặc đăng nhập bằng -</p>
-                <div class="auth-social">
-                    <a href="#" class="auth-google"><i class="fa-brands fa-google"></i></a>
-                    <a href="#" class="auth-facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <div class="popup-box auth-popup">
+                <div class="auth-left">
+                    <img src="~/Content/img/DangNhapPopup.png" alt="Mua sắm tại Hoàng Hà PC">
                 </div>
-                <p class="auth-terms">Bằng việc tiếp tục, bạn đã chấp nhận <a href="#">điều khoản sử dụng</a></p>
-            </div>
-        </div>
-    </div>
 
+                <div class="auth-right">
+                    <a href="#" class="popup-close"><i class="fa-solid fa-xmark"></i></a>
 
-    <!-- ===================== POPUP ĐĂNG KÝ ===================== -->
-    <div id="register" class="popup">
-        <a href="#" class="popup-overlay"></a>
+                    <h2>Đăng nhập</h2>
+                    <p class="auth-sub"><a href="#register" class="auth-link">Đăng ký</a> nếu chưa có tài khoản.</p>
 
-        <div class="popup-box auth-popup">
-            <div class="auth-left">
-                <img src="~/Content/img/DangNhapPopup.png" alt="Mua sắm tại Hoàng Hà PC">
-            </div>
-
-            <div class="auth-right">
-                <!-- Nút quay lại: về popup đăng nhập -->
-                <a href="#login" class="auth-back"><i class="fa-solid fa-chevron-left"></i></a>
-
-                <h2>Tạo tài khoản</h2>
-                <p class="auth-sub">Vui lòng cho chúng tôi biết thông tin về bạn</p>
-
-                <form action="#">
-                    <div class="auth-field">
-                        <input type="text" placeholder="Tên bạn">
-                    </div>
-                    <div class="auth-field">
-                        <input type="email" placeholder="Email">
-                    </div>
-                    <div class="auth-row">
+                    <!-- Gửi thẳng tới Account/Login; sai thì server mở trang Đăng nhập kèm báo lỗi -->
+                    <form action="@Url.Action("Login", "Account", new { area = "" })" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
                         <div class="auth-field">
-                            <input type="password" placeholder="Mật khẩu">
-                            <i class="fa-regular fa-eye auth-eye"></i>
+                            <input type="text" name="Username" placeholder="Tên đăng nhập" required maxlength="30" autocomplete="username">
                         </div>
                         <div class="auth-field">
-                            <input type="password" placeholder="Nhập lại mật khẩu">
+                            <input type="password" name="Password" placeholder="Mật khẩu" required autocomplete="current-password">
                             <i class="fa-regular fa-eye auth-eye"></i>
                         </div>
+                        <a href="#" class="auth-forgot">Quên mật khẩu ?</a>
+                        <button type="submit" class="auth-submit">Đăng nhập</button>
+                    </form>
+
+                    <p class="auth-or">- Hoặc đăng nhập bằng -</p>
+                    <div class="auth-social">
+                        <a href="#" class="auth-google"><i class="fa-brands fa-google"></i></a>
+                        <a href="#" class="auth-facebook"><i class="fa-brands fa-facebook-f"></i></a>
                     </div>
-                    <button type="submit" class="auth-submit auth-register-submit">Tạo tài khoản</button>
-                </form>
+                    <p class="auth-terms">Bằng việc tiếp tục, bạn đã chấp nhận <a href="#">điều khoản sử dụng</a></p>
+                </div>
             </div>
         </div>
-    </div>
+
+        <!-- ===================== POPUP ĐĂNG KÝ ===================== -->
+        <div id="register" class="popup">
+            <a href="#" class="popup-overlay"></a>
+
+            <div class="popup-box auth-popup">
+                <div class="auth-left">
+                    <img src="~/Content/img/DangNhapPopup.png" alt="Mua sắm tại Hoàng Hà PC">
+                </div>
+
+                <div class="auth-right">
+                    <a href="#login" class="auth-back"><i class="fa-solid fa-chevron-left"></i></a>
+
+                    <h2>Tạo tài khoản</h2>
+                    <p class="auth-sub">Vui lòng cho chúng tôi biết thông tin về bạn</p>
+
+                    <form action="@Url.Action("Register", "Account", new { area = "" })" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                        <div class="auth-field">
+                            <input type="text" name="Username" placeholder="Tên đăng nhập (chữ không dấu, số, _)" required maxlength="30" autocomplete="username">
+                        </div>
+                        <div class="auth-row">
+                            <div class="auth-field">
+                                <input type="text" name="CustomerName" placeholder="Họ tên" required maxlength="100" autocomplete="name">
+                            </div>
+                            <div class="auth-field">
+                                <input type="tel" name="CustomerPhone" placeholder="Số điện thoại" required pattern="0[0-9]{9}" title="10 chữ số, bắt đầu bằng 0" autocomplete="tel">
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <input type="email" name="CustomerEmail" placeholder="Email" required maxlength="100" autocomplete="email">
+                        </div>
+                        <div class="auth-field">
+                            <input type="text" name="CustomerAddress" placeholder="Địa chỉ" required maxlength="255" autocomplete="street-address">
+                        </div>
+                        <div class="auth-row">
+                            <div class="auth-field">
+                                <input type="password" name="Password" placeholder="Mật khẩu (từ 6 ký tự)" required minlength="6" autocomplete="new-password">
+                                <i class="fa-regular fa-eye auth-eye"></i>
+                            </div>
+                            <div class="auth-field">
+                                <input type="password" name="ConfirmPassword" placeholder="Nhập lại mật khẩu" required autocomplete="new-password">
+                                <i class="fa-regular fa-eye auth-eye"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="auth-submit auth-register-submit">Tạo tài khoản</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

@@ -1,0 +1,235 @@
+﻿/* ===== TRANG TÀI KHOẢN: Đăng nhập, Đăng ký, Thông tin tài khoản ===== */
+[hidden] {
+    display: none !important;
+}
+
+/* --- Khung giữa trang cho Đăng nhập / Đăng ký (dùng lại class auth- của popup) --- */
+.account-page {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.account-box {
+    width: 100%;
+    max-width: 480px;
+    padding: 36px 40px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.account-box-wide {
+    max-width: 640px;
+}
+
+.account-box h1 {
+    color: #3a4252;
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.account-box .auth-field input {
+    max-width: none; /* Site.css có input { max-width: 280px } */
+}
+
+.account-box .auth-submit {
+    margin-top: 8px;
+}
+
+.account-label {
+    display: block;
+    margin-bottom: 2px;
+    color: #666;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* --- Thông báo lỗi validation (class do MVC tự sinh) --- */
+.field-validation-error {
+    display: block;
+    margin-top: 4px;
+    color: #d9302c;
+    font-size: 13px;
+}
+
+.auth-field input.input-validation-error {
+    border-bottom-color: #d9302c;
+}
+
+.validation-summary-errors {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background-color: #fdecea;
+    color: #b3261e;
+}
+
+    .validation-summary-errors ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+/* --- Trang Thông tin tài khoản: menu trái | nội dung phải --- */
+.account-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    padding: 0 10px;
+}
+
+.account-side {
+    padding: 16px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.account-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+    .account-user small {
+        display: block;
+        color: #888;
+        font-size: 13px;
+    }
+
+    .account-user strong {
+        display: block;
+        overflow-wrap: anywhere;
+    }
+
+.account-avatar {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #eaf3fe;
+    color: #2f7df0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+/* link và nút Đăng xuất trong menu trông giống nhau */
+.account-menu a,
+.account-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: #333;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .account-menu a:hover,
+    .account-menu button:hover,
+    .account-menu a.active {
+        background-color: #f0f4fa;
+    }
+
+.account-menu i {
+    width: 18px;
+    color: #666;
+}
+
+.account-main h1 {
+    margin-bottom: 14px;
+    color: #0b3d91;
+    font-size: 24px;
+}
+
+.account-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.account-card {
+    padding: 20px 24px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+    .account-card h2 {
+        margin-bottom: 14px;
+        color: #3a4252;
+        font-size: 18px;
+    }
+
+.account-form-row {
+    margin-bottom: 14px;
+}
+
+.account-input {
+    width: 100%;
+    max-width: none;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ccd3dd;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+}
+
+    .account-input:focus {
+        border-color: #2f7df0;
+    }
+
+    .account-input[readonly] {
+        background-color: #f3f5f8;
+        color: #666;
+    }
+
+    .account-input.input-validation-error {
+        border-color: #d9302c;
+    }
+
+.account-btn {
+    height: 40px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2f7df0;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .account-btn:hover {
+        background-color: #1b5ce0;
+    }
+
+/* --- Màn hình nhỏ --- */
+@media (max-width: 900px) {
+    .account-layout,
+    .account-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .account-box {
+        padding: 24px 18px;
+    }
+
+        .account-box .auth-row {
+            flex-direction: column;
+            gap: 0;
+        }
+}

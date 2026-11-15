@@ -703,7 +703,7 @@ a {
     }
 
 .auth-register-submit {
-    margin-top: 55px;
+    margin-top: 10px;
 }
 
 .auth-or {
@@ -746,3 +746,36 @@ a {
     .auth-terms a {
         text-decoration: underline;
     }
+
+/*Popup đăng ký dài hơn: màn hình thấp thì cuộn trong popup*/
+.auth-popup {
+    overflow-y: auto;
+}
+
+/*Tên khách trên nút header: dài quá thì cắt bằng dấu ...*/
+.login-name {
+    display: inline-block;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/*Nút Đăng xuất là <button> nhưng trông giống các nút hover-btn (thẻ <a>)*/
+.hover-btn-logout {
+    width: 100%;
+    background-color: white;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/*Thông báo chung trên đầu trang (đăng ký, cập nhật thông tin…)*/
+.site-alert {
+    margin: 0 10px 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background-color: #e7f6ec;
+    color: #146c2e;
+}

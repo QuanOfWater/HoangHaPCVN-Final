@@ -1,0 +1,75 @@
+﻿@model HoangHaPCVN.Models.ViewModel.RegisterVM
+@{
+    ViewBag.Title = "Đăng ký";
+    string returnUrl = ViewBag.ReturnUrl as string;
+}
+
+@section styles {
+    <link href="~/Content/Account.css" rel="stylesheet" />
+}
+
+<div class="account-page">
+    <div class="account-box account-box-wide">
+        <h1>Tạo tài khoản</h1>
+        <p class="auth-sub">
+            Đã có tài khoản? <a href="@Url.Action("Login", "Account", new { returnUrl = returnUrl })" class="auth-link">Đăng nhập</a>
+        </p>
+
+        @using (Html.BeginForm("Register", "Account", new { area = "" }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            @Html.ValidationSummary(true)
+
+            <div class="auth-field">
+                @Html.LabelFor(m => m.Username, new { @class = "account-label" })
+                @Html.TextBoxFor(m => m.Username, new { placeholder = "4–30 ký tự: chữ không dấu, số, dấu _", maxlength = "30", autocomplete = "username" })
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
+
+            <div class="auth-row">
+                <div class="auth-field">
+                    @Html.LabelFor(m => m.CustomerName, new { @class = "account-label" })
+                    @Html.TextBoxFor(m => m.CustomerName, new { placeholder = "Nguyễn Văn A", autocomplete = "name" })
+                    @Html.ValidationMessageFor(m => m.CustomerName)
+                </div>
+                <div class="auth-field">
+                    @Html.LabelFor(m => m.CustomerPhone, new { @class = "account-label" })
+                    @Html.TextBoxFor(m => m.CustomerPhone, new { type = "tel", placeholder = "0xxxxxxxxx", maxlength = "10", autocomplete = "tel" })
+                    @Html.ValidationMessageFor(m => m.CustomerPhone)
+                </div>
+            </div>
+
+            <div class="auth-field">
+                @Html.LabelFor(m => m.CustomerEmail, new { @class = "account-label" })
+                @Html.TextBoxFor(m => m.CustomerEmail, new { type = "email", placeholder = "email@example.com", autocomplete = "email" })
+                @Html.ValidationMessageFor(m => m.CustomerEmail)
+            </div>
+
+            <div class="auth-field">
+                @Html.LabelFor(m => m.CustomerAddress, new { @class = "account-label" })
+                @Html.TextBoxFor(m => m.CustomerAddress, new { placeholder = "Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành", autocomplete = "street-address" })
+                @Html.ValidationMessageFor(m => m.CustomerAddress)
+            </div>
+
+            <div class="auth-row">
+                <div class="auth-field">
+                    @Html.LabelFor(m => m.Password, new { @class = "account-label" })
+                    @Html.PasswordFor(m => m.Password, new { autocomplete = "new-password" })
+                    @Html.ValidationMessageFor(m => m.Password)
+                </div>
+                <div class="auth-field">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "account-label" })
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { autocomplete = "new-password" })
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                </div>
+            </div>
+
+            <button type="submit" class="auth-submit">Tạo tài khoản</button>
+        }
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

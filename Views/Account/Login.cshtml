@@ -1,0 +1,41 @@
+﻿@model HoangHaPCVN.Models.ViewModel.LoginVM
+@{
+    ViewBag.Title = "Đăng nhập";
+    string returnUrl = ViewBag.ReturnUrl as string;
+}
+
+@section styles {
+    <link href="~/Content/Account.css" rel="stylesheet" />
+}
+
+<div class="account-page">
+    <div class="account-box">
+        <h1>Đăng nhập</h1>
+        <p class="auth-sub">
+            <a href="@Url.Action("Register", "Account", new { returnUrl = returnUrl })" class="auth-link">Đăng ký</a> nếu chưa có tài khoản.
+        </p>
+
+        @using (Html.BeginForm("Login", "Account", new { area = "" }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            @Html.ValidationSummary(true)
+
+            <div class="auth-field">
+                @Html.LabelFor(m => m.Username, new { @class = "account-label" })
+                @Html.TextBoxFor(m => m.Username, new { placeholder = "Tên đăng nhập", autocomplete = "username", autofocus = "autofocus" })
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
+            <div class="auth-field">
+                @Html.LabelFor(m => m.Password, new { @class = "account-label" })
+                @Html.PasswordFor(m => m.Password, new { placeholder = "Mật khẩu", autocomplete = "current-password" })
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+            <button type="submit" class="auth-submit">Đăng nhập</button>
+        }
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
