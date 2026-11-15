@@ -19,7 +19,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             //Đăng nhập Admin thành công rồi thì vào trang chủ Admin
             if (Session["UserRole"] as string == "Admin")
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "HomeAdmin");
             }
             ViewBag.ReturnUrl = returnUrl;
             return View();
@@ -51,7 +51,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
                     {
                         return Redirect(returnUrl);
                     }
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "HomeAdmin");
                 }
 
                 ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản không có quyền Admin."); //Bắt lỗi 

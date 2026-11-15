@@ -1,0 +1,60 @@
+﻿@model HoangHaPCVN.Models.Order
+@using HoangHaPCVN.Models.ViewModel
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
+}
+
+@section styles {
+    <link href="~/Content/Productlist.css" rel="stylesheet" />
+    <link href="~/Content/Order.css" rel="stylesheet" />
+}
+
+<div class="breadcrumb-bar">
+    <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <span class="sep">›</span>
+    <a href="@Url.Action("MyOrder", "Order", new { area = "" })">Đơn hàng của tôi</a>
+    <span class="sep">›</span>
+    <span>Đơn #@Model.OrderID</span>
+</div>
+
+<div class="order-narrow">
+    <h1 class="order-title">Chi tiết đơn hàng #@Model.OrderID</h1>
+
+    @Html.Partial("_PVOrderInfo", Model)
+
+    <div class="order-actions">
+        <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="order-act-outline">‹ Đơn hàng của tôi</a>
+
+        @using (Html.BeginForm("BuyAgain", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="order-act-primary">Mua lại</button>
+        }
+
+        @if (OrderStatuses.CanCancel(Model.OrderStatus))
+        {
+            using (Html.BeginForm("CancelOrder", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post,
+                new { data_confirm = "Bạn chắc chắn muốn hủy đơn hàng #" + Model.OrderID + "?" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                <button type="submit" class="order-act-danger">Hủy đơn hàng</button>
+            }
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        //Hỏi xác nhận trước khi hủy đơn (form có data-confirm)
+        (function () {
+            document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm(form.dataset.confirm)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        })();
+    </script>
+}

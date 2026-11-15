@@ -1,0 +1,23 @@
+﻿@model HoangHaPCVN.Models.Order
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+}
+
+@section styles {
+    <link href="~/Content/Order.css" rel="stylesheet" />
+}
+
+<div class="order-narrow">
+    <section class="order-card order-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <h1>Đặt hàng thành công!</h1>
+        <p>Cảm ơn bạn đã mua sắm tại Hoàng Hà PC. Mã đơn hàng của bạn là <strong>#@Model.OrderID</strong>.</p>
+    </section>
+
+    @Html.Partial("_PVOrderInfo", Model)
+
+    <div class="order-actions">
+        <a href="@Url.Action("Index", "Home", new { area = "" })" class="order-act-primary">Tiếp tục mua sắm</a>
+        <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="order-act-outline">Xem đơn hàng của tôi</a>
+    </div>
+</div>

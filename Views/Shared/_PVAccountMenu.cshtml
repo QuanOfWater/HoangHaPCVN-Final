@@ -1,0 +1,24 @@
+﻿@model string
+@* Menu trái các trang tài khoản. Model = mục đang chọn: "profile" hoặc "orders" *@
+
+<aside class="account-side">
+    <div class="account-user">
+        <div class="account-avatar"><i class="fa-regular fa-user"></i></div>
+        <div>
+            <small>Tài khoản của</small>
+            <strong>@Session["CustomerName"]</strong>
+        </div>
+    </div>
+    <nav class="account-menu">
+        <a href="@Url.Action("ProfileInfo", "Account", new { area = "" })" class="@(Model == "profile" ? "active" : null)">
+            <i class="fa-solid fa-user"></i> Thông tin tài khoản
+        </a>
+        <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="@(Model == "orders" ? "active" : null)">
+            <i class="fa-solid fa-box"></i> Đơn hàng của tôi
+        </a>
+        <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+        </form>
+    </nav>
+</aside>

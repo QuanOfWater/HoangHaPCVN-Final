@@ -1,0 +1,54 @@
+﻿@model HoangHaPCVN.Models.Order
+@{
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<section class="order-card">
+    <h2>Thông tin đơn hàng</h2>
+    <div class="order-info">
+        <div><small>Mã đơn hàng</small>#@Model.OrderID</div>
+        <div><small>Ngày đặt</small>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+        <div><small>Trạng thái đơn</small><b class="order-status" data-status="@Model.OrderStatus">@Model.OrderStatus</b></div>
+        <div><small>Trạng thái thanh toán</small>@Model.PaymentStatus</div>
+        <div><small>Hình thức thanh toán</small>@Model.PaymentMethod</div>
+        <div><small>Hình thức giao hàng</small>@Model.DeliveryMethod</div>
+        <div class="full"><small>Địa chỉ giao hàng</small>@Model.ShippingAddress</div>
+    </div>
+</section>
+
+<section class="order-card">
+    <h2>Chi tiết đơn hàng</h2>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th colspan="2">Sản phẩm</th>
+                <th class="col-num">Số lượng</th>
+                <th class="col-num">Đơn giá</th>
+                <th class="col-num">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model.OrderDetails)
+            {
+                string anh = string.IsNullOrEmpty(d.Product.ProductImage)
+                    ? "~/Content/images/default_img.png"
+                    : d.Product.ProductImage;
+                <tr>
+                    <td class="col-img"><img src="@Url.Content(anh)" alt="@d.Product.ProductName" /></td>
+                    <td>
+                        <a href="@Url.Action("ProductDetail", "Home", new { area = "", id = d.ProductID })">@d.Product.ProductName</a>
+                    </td>
+                    <td class="col-num">@d.Quantity</td>
+                    <td class="col-num">@d.UnitPrice.ToString("N0", vn) đ</td>
+                    <td class="col-num">@((d.TotalPrice ?? d.Quantity * d.UnitPrice).ToString("N0", vn)) đ</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="col-num">Tổng tiền</td>
+                <td class="col-num order-total-money">@Model.TotalAmount.ToString("N0", vn) đ</td>
+            </tr>
+        </tfoot>
+    </table>
+</section>

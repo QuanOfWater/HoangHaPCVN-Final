@@ -1,0 +1,141 @@
+﻿@model HoangHaPCVN.Models.ViewModel.MyOrderVM
+@using HoangHaPCVN.Models.ViewModel
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    int soSPHien = 2; //Mỗi thẻ đơn chỉ hiện 2 sản phẩm đầu
+}
+
+@section styles {
+    <link href="~/Content/Productlist.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <link href="~/Content/Account.css" rel="stylesheet" />
+    <link href="~/Content/Order.css" rel="stylesheet" />
+}
+
+<div class="breadcrumb-bar">
+    <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <span class="sep">›</span>
+    <span>Đơn hàng của tôi</span>
+</div>
+
+<div class="account-layout">
+    @Html.Partial("_PVAccountMenu", "orders")
+
+    <section class="account-main">
+        <h1>Đơn hàng của tôi</h1>
+
+        @* Tab trạng thái (giữ từ khóa tìm kiếm) *@
+        <nav class="mo-tabs">
+            <a href="@Url.Action("MyOrder", new { search = Model.Search })" class="@(Model.Status == null ? "active" : null)">
+                Tất cả đơn <span>@Model.TotalCount</span>
+            </a>
+            @foreach (var st in OrderStatuses.All)
+            {
+                <a href="@Url.Action("MyOrder", new { status = st, search = Model.Search })" class="@(Model.Status == st ? "active" : null)">
+                    @st <span>@Model.StatusCounts[st]</span>
+                </a>
+            }
+        </nav>
+
+        @* Tìm kiếm (giữ lại tab đang chọn) *@
+        <form class="mo-search" method="get" action="@Url.Action("MyOrder")">
+            @if (Model.Status != null)
+            {
+                <input type="hidden" name="status" value="@Model.Status" />
+            }
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="search" value="@Model.Search" maxlength="100"
+                   placeholder="Tìm đơn hàng theo Mã đơn hàng hoặc Tên sản phẩm" aria-label="Tìm đơn hàng" />
+            <button type="submit">Tìm đơn hàng</button>
+        </form>
+
+        @if (!Model.Orders.Any())
+        {
+            <div class="order-card mo-empty">
+                <i class="fa-solid fa-box-open"></i>
+                <p>@(string.IsNullOrEmpty(Model.Search) ? "Chưa có đơn hàng nào." : "Không tìm thấy đơn hàng phù hợp.")</p>
+                <a href="@Url.Action("Index", "Home", new { area = "" })" class="order-act-primary">Tiếp tục mua sắm</a>
+            </div>
+        }
+
+        @* Danh sách đơn *@
+        @foreach (var order in Model.Orders)
+        {
+            var chiTiet = order.OrderDetails.ToList();
+
+            <article class="order-card mo-order">
+                <header class="mo-order-head">
+                    <b class="order-status" data-status="@order.OrderStatus">@order.OrderStatus</b>
+                    <span class="mo-order-code">Đơn #@order.OrderID · @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                </header>
+
+                @foreach (var d in chiTiet.Take(soSPHien))
+                {
+                    string anh = string.IsNullOrEmpty(d.Product.ProductImage)
+                        ? "~/Content/images/default_img.png"
+                        : d.Product.ProductImage;
+                    <div class="mo-item">
+                        <div class="mo-item-img">
+                            <img src="@Url.Content(anh)" alt="@d.Product.ProductName" />
+                            <span>x@(d.Quantity)</span>
+                        </div>
+                        <a href="@Url.Action("ProductDetail", "Home", new { area = "", id = d.ProductID })" class="mo-item-name">
+                            @d.Product.ProductName
+                        </a>
+                        <span class="mo-item-price">@((d.TotalPrice ?? d.Quantity * d.UnitPrice).ToString("N0", vn)) đ</span>
+                    </div>
+                }
+
+                @if (chiTiet.Count > soSPHien)
+                {
+                    <a href="@Url.Action("OrderDetails", new { id = order.OrderID })" class="mo-more">
+                        Xem thêm @(chiTiet.Count - soSPHien) sản phẩm
+                    </a>
+                }
+
+                <footer class="mo-order-foot">
+                    <div class="mo-total">Tổng tiền: <strong>@order.TotalAmount.ToString("N0", vn) đ</strong></div>
+                    <div class="mo-actions">
+                        @if (OrderStatuses.CanCancel(order.OrderStatus))
+                        {
+                            using (Html.BeginForm("CancelOrder", "Order", new { area = "", id = order.OrderID }, FormMethod.Post,
+                                new { data_confirm = "Bạn chắc chắn muốn hủy đơn hàng #" + order.OrderID + "?" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                                <button type="submit" class="mo-btn mo-btn-danger">Hủy đơn</button>
+                            }
+                        }
+                        @using (Html.BeginForm("BuyAgain", "Order", new { area = "", id = order.OrderID }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="mo-btn">Mua lại</button>
+                        }
+                        <a href="@Url.Action("OrderDetails", new { id = order.OrderID })" class="mo-btn">Xem chi tiết</a>
+                    </div>
+                </footer>
+            </article>
+        }
+
+        @* Phân trang: giữ lại tab và từ khóa *@
+        @Html.PagedListPager(Model.Orders, page => Url.Action("MyOrder",
+            new { status = Model.Status, search = Model.Search, page }))
+    </section>
+</div>
+
+@section scripts {
+    <script>
+        //Hỏi xác nhận trước khi hủy đơn
+        (function () {
+            document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm(form.dataset.confirm)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        })();
+    </script>
+}

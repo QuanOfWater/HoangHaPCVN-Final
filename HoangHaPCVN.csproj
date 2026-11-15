@@ -147,6 +147,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Filters\CustomerAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -193,10 +194,12 @@
     <Compile Include="Models\ViewModel\CartItem.cs" />
     <Compile Include="Models\ViewModel\CartService.cs" />
     <Compile Include="Models\ViewModel\ChangePasswordVM.cs" />
+    <Compile Include="Models\ViewModel\CheckoutVM.cs" />
     <Compile Include="Models\ViewModel\CustomerSearchVM.cs" />
     <Compile Include="Models\ViewModel\DashBoardVM.cs" />
     <Compile Include="Models\ViewModel\HomeProductVM.cs" />
     <Compile Include="Models\ViewModel\LoginVM.cs" />
+    <Compile Include="Models\ViewModel\MyOrderVM.cs" />
     <Compile Include="Models\ViewModel\OrderSearchVM.cs" />
     <Compile Include="Models\ViewModel\PersonalMenuVM.cs" />
     <Compile Include="Models\ViewModel\ProductDetailVM.cs" />
@@ -317,6 +320,7 @@
     <Content Include="Content\img\VGA8.PNG" />
     <Content Include="Content\img\VGA9.PNG" />
     <Content Include="Content\img\VSMT.png" />
+    <Content Include="Content\Order.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Content\Productdetail.css" />
     <Content Include="Content\Productlist.css" />
@@ -411,6 +415,12 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\ProfileInfo.cshtml" />
     <Content Include="Views\Account\_PVChangePassword.cshtml" />
+    <Content Include="Views\Order\Checkout.cshtml" />
+    <Content Include="Views\Order\OrderSuccess.cshtml" />
+    <Content Include="Views\Shared\_PVAccountMenu.cshtml" />
+    <Content Include="Views\Order\_PVOrderInfo.cshtml" />
+    <Content Include="Views\Order\OrderDetails.cshtml" />
+    <Content Include="Views\Order\MyOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

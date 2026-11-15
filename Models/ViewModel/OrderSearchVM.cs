@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using PagedList;
 
@@ -30,5 +31,10 @@ namespace HoangHaPCVN.Models.ViewModel
             "Đã giao",
             "Đã hủy"
         };
+        //Khách chỉ được hủy khi cửa hàng chưa giao đơn cho bên vận chuyển
+        public static bool CanCancel(string status)
+        {
+            return status == "Chờ thanh toán" || status == "Đang xử lý";
+        }
     }
 }

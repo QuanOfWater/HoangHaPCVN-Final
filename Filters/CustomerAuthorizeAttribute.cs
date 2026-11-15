@@ -30,7 +30,7 @@ namespace HoangHaPCVN.Filters
                 action = "Login",
 
                 //Chỉ nhớ địa chỉ của trang GET; action POST không mở lại bằng đường link được
-                returnUrl = request.HttpMethod == "GET" ? request.Url : null
+                returnUrl = request.HttpMethod == "GET" ? request.RawUrl : null
             }));
         }
     }

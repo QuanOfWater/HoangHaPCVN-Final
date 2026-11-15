@@ -16,23 +16,7 @@
 
 <div class="account-layout">
     <!-- Cột trái: menu tài khoản -->
-    <aside class="account-side">
-        <div class="account-user">
-            <div class="account-avatar"><i class="fa-regular fa-user"></i></div>
-            <div>
-                <small>Tài khoản của</small>
-                <strong>@Session["CustomerName"]</strong>
-            </div>
-        </div>
-        <nav class="account-menu">
-            <a href="@Url.Action("ProfileInfo", "Account")" class="active"><i class="fa-solid fa-user"></i> Thông tin tài khoản</a>
-            <a href="@Url.Action("MyOrder", "Order")"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
-            <form action="@Url.Action("Logout", "Account")" method="post">
-                @Html.AntiForgeryToken()
-                <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
-            </form>
-        </nav>
-    </aside>
+    @Html.Partial("_PVAccountMenu", "profile")
 
     <!-- Cột phải: thông tin cá nhân + đổi mật khẩu -->
     <section class="account-main">

@@ -1,0 +1,163 @@
+﻿@model HoangHaPCVN.Models.ViewModel.CheckoutVM
+@using HoangHaPCVN.Models.ViewModel
+@{
+    ViewBag.Title = "Thanh toán";
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+@section styles {
+    <link href="~/Content/Productlist.css" rel="stylesheet" />
+    <link href="~/Content/Order.css" rel="stylesheet" />
+}
+
+<div class="breadcrumb-bar">
+    <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <span class="sep">›</span>
+    <a href="@Url.Action("Index", "Cart", new { area = "" })">Giỏ hàng</a>
+    <span class="sep">›</span>
+    <span>Thanh toán</span>
+</div>
+
+<h1 class="order-title">Thanh toán</h1>
+
+@using (Html.BeginForm("Checkout", "Order", new { area = "" }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @* Mã các sản phẩm được chọn: gửi lại để server biết đặt những sản phẩm nào *@
+    foreach (var item in Model.CartItems)
+    {
+        <input type="hidden" name="ids" value="@item.ProductID" />
+    }
+
+    @Html.ValidationSummary(true)
+
+    <div class="order-layout">
+        @* Cột bên trái *@
+        <div class="order-main">
+
+            <section class="order-card">
+                <h2>Chọn hình thức giao hàng</h2>
+                @for (int i = 0; i < CheckoutOptions.DeliveryMethods.Length; i++)
+                {
+                    string dm = CheckoutOptions.DeliveryMethods[i];
+                    <label class="order-option">
+                        @Html.RadioButtonFor(m => m.DeliveryMethod, dm, new { id = "dm" + i })
+                        <span>@dm</span>
+                        <span class="order-free">Miễn phí</span>
+                    </label>
+                }
+                @Html.ValidationMessageFor(m => m.DeliveryMethod)
+            </section>
+
+            <section class="order-card">
+                <h2>Chọn hình thức thanh toán</h2>
+                @for (int i = 0; i < CheckoutOptions.PaymentMethods.Length; i++)
+                {
+                    string pmt = CheckoutOptions.PaymentMethods[i];
+                    <label class="order-option">
+                        @Html.RadioButtonFor(m => m.PaymentMethod, pmt, new { id = "pm" + i })
+                        <span>@pmt</span>
+                    </label>
+                }
+                @Html.ValidationMessageFor(m => m.PaymentMethod)
+            </section>
+
+            <section class="order-card">
+                <h2>Sản phẩm đặt mua (@(Model.CartItems.Sum(i => i.Quantity)))</h2>
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Sản phẩm</th>
+                            <th class="col-num">Số lượng</th>
+                            <th class="col-num">Đơn giá</th>
+                            <th class="col-num">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CartItems)
+                        {
+                            string anh = string.IsNullOrEmpty(item.ProductImage)
+                                ? "~/Content/images/default_img.png"
+                                : item.ProductImage;
+                            <tr>
+                                <td class="col-img"><img src="@Url.Content(anh)" alt="@item.ProductName" /></td>
+                                <td>@item.ProductName</td>
+                                <td class="col-num">@item.Quantity</td>
+                                <td class="col-num">@item.UnitPrice.ToString("N0", vn) đ</td>
+                                <td class="col-num">@item.TotalPrice.ToString("N0", vn) đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        @* Cột bên phải *@
+        <aside class="order-side">
+            <section class="order-card">
+                <div class="order-card-head">
+                    <h2>Giao tới</h2>
+             
+                    <button type="button" class="order-link-btn" id="btnSuaDiaChi" hidden>Chỉnh sửa</button>
+                </div>
+                <p class="order-receiver">@Model.CustomerName <span>| @Model.CustomerPhone</span></p>
+
+                @Html.LabelFor(m => m.ShippingAddress, new { @class = "order-label" })
+                @Html.TextBoxFor(m => m.ShippingAddress, new { @class = "order-input", maxlength = "255" })
+                @Html.ValidationMessageFor(m => m.ShippingAddress)
+
+                <p class="order-hint">
+                    Đổi họ tên, số điện thoại tại
+                    <a href="@Url.Action("ProfileInfo", "Account", new { area = "" })">Thông tin tài khoản</a>.
+                </p>
+            </section>
+
+            <section class="order-card">
+                <h2>Đơn hàng</h2>
+                <div class="order-sum-row">
+                    <span>Tạm tính</span>
+                    <span>@Model.TotalAmount.ToString("N0", vn) đ</span>
+                </div>
+                <div class="order-sum-row">
+                    <span>Phí vận chuyển</span>
+                    <span class="order-free">Miễn phí</span>
+                </div>
+                <div class="order-sum-total">
+                    <span>Tổng tiền</span>
+                    <strong>@Model.TotalAmount.ToString("N0", vn) đ</strong>
+                </div>
+
+                <button type="submit" class="order-btn-submit">Đặt hàng</button>
+                <a href="@Url.Action("Index", "Cart", new { area = "" })" class="order-btn-back">‹ Quay lại giỏ hàng</a>
+            </section>
+        </aside>
+    </div>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        //Địa chỉ giao hàng: mặc định chỉ xem, bấm "Chỉnh sửa" mới sửa được
+        (function () {
+            var input = document.getElementById('ShippingAddress');
+            var btnSua = document.getElementById('btnSuaDiaChi');
+            if (!input || !btnSua) {
+                return;
+            }
+
+            //Ô đang trống hoặc đang báo lỗi thì để sẵn cho khách sửa
+            if (input.value.trim() !== '' && !input.classList.contains('input-validation-error')) {
+                input.readOnly = true;
+                btnSua.hidden = false;
+            }
+
+            btnSua.addEventListener('click', function () {
+                input.readOnly = false;
+                btnSua.hidden = true;
+                input.focus();
+                input.select();
+            });
+        })();
+    </script>
+}
