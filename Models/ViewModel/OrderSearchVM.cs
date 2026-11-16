@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using System.Security;
 using System.Web;
 using PagedList;
 
@@ -9,7 +9,7 @@ namespace HoangHaPCVN.Models.ViewModel
 {
     public class OrderSearchVM
     {
-        // Lọc theo khách hàng (khi xem một khách hàng cụ thể)
+        //Lọc theo khách hàng (khi xem một khách hàng cụ thể)
         public int? CustomerID { get; set; }
         public string CustomerName { get; set; }
 
@@ -20,7 +20,7 @@ namespace HoangHaPCVN.Models.ViewModel
         public IPagedList<Order> Orders { get; set; }
     }
 
-    // Danh sách trạng thái đơn hàng dùng chung cho cả trang
+    //Danh sách trạng thái đơn hàng dùng chung cho cả trang
     public static class OrderStatuses
     {
         public static readonly string[] All =

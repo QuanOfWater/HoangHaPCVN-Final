@@ -9,39 +9,91 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng nhập trang quản trị - HoangHaPC</title>
     @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/Content/AdminLogin.css" />
 </head>
-<body class="bg-light">
-    <div class="container" style="max-width: 420px; margin-top: 80px;">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="text-center mb-4">ĐĂNG NHẬP QUẢN TRỊ</h3>
+<body class="admin-login-page">
+    <div class="al-card">
+        @* ===== Cột trái: thương hiệu ===== *@
+        <div class="al-brand">
+            <img src="~/Content/img/LogoHHPC.png" alt="HoangHaPC" class="al-logo" />
+            <h2>Trang quản trị</h2>
+            <p>Quản lý sản phẩm, đơn hàng và khách hàng của HoangHaPC tại một nơi.</p>
+            <ul class="al-features">
+                <li><i class="fa-solid fa-box"></i> Sản phẩm &amp; danh mục</li>
+                <li><i class="fa-solid fa-receipt"></i> Đơn hàng &amp; trạng thái</li>
+                <li><i class="fa-solid fa-users"></i> Khách hàng &amp; tài khoản</li>
+            </ul>
+        </div>
 
-                @using (Html.BeginForm("Login", "Account", new { returnUrl = returnUrl }, FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+        @* ===== Cột phải: form đăng nhập ===== *@
+        <div class="al-form">
+            <h1 class="al-title">Đăng nhập quản trị</h1>
+            <p class="al-subtitle">Chỉ dành cho tài khoản có quyền Admin.</p>
 
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.Username, new { @class = "form-label fw-bold" })
-                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", autofocus = "autofocus" })
-                        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+            @using (Html.BeginForm("Login", "Account", new { returnUrl = returnUrl }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "al-alert" })
+
+                <div class="al-field">
+                    @Html.LabelFor(m => m.Username)
+                    <div class="al-input-wrap">
+                        <i class="fa-solid fa-user"></i>
+                        @Html.TextBoxFor(m => m.Username, new
+                        {
+                            @class = "al-input",
+                            autofocus = "autofocus",
+                            autocomplete = "username",
+                            placeholder = "Nhập tên đăng nhập"
+                        })
                     </div>
+                    @Html.ValidationMessageFor(m => m.Username)
+                </div>
 
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.Password, new { @class = "form-label fw-bold" })
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                <div class="al-field">
+                    @Html.LabelFor(m => m.Password)
+                    <div class="al-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        @Html.PasswordFor(m => m.Password, new
+                        {
+                            @class = "al-input",
+                            autocomplete = "current-password",
+                            placeholder = "Nhập mật khẩu"
+                        })
+                        <button type="button" class="al-toggle-pass" aria-label="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                     </div>
+                    @Html.ValidationMessageFor(m => m.Password)
+                </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-                }
-            </div>
+                <button type="submit" class="al-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                </button>
+            }
+
+            <a href="@Url.Action("Index", "Home", new { area = "" })" class="al-back">
+                <i class="fa-solid fa-arrow-left"></i> Về trang mua sắm
+            </a>
         </div>
     </div>
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        //Bấm icon con mắt để hiện / ẩn mật khẩu
+        document.querySelector('.al-toggle-pass').addEventListener('click', function () {
+            var input = document.getElementById('Password');
+            var icon = this.querySelector('i');
+            var dangAn = input.type === 'password';
+            input.type = dangAn ? 'text' : 'password';
+            icon.className = dangAn ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            this.setAttribute('aria-label', dangAn ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+        });
+    </script>
 </body>
 </html>
