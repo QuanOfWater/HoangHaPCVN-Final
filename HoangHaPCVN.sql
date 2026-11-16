@@ -23,6 +23,7 @@ CREATE TABLE [dbo].[Customer] (
 CREATE TABLE [dbo].[Category] (
     [CategoryID]   INT IDENTITY (1, 1) NOT NULL,
     [CategoryName] NVARCHAR (MAX) NOT NULL,
+    [CategoryIcon] NVARCHAR (50) NULL, 
     PRIMARY KEY CLUSTERED ([CategoryID] ASC)
 );
 
@@ -68,8 +69,13 @@ CREATE TABLE [dbo].[OrderDetail] (
 
 -- Du lieu ban dau: 1 tai khoan admin va 8 danh muc theo sidebar trang chu
 INSERT INTO [dbo].[User] VALUES (N'admin', N'123456', N'Admin');
-INSERT INTO [dbo].[Category] (CategoryName) VALUES
- (N'PC Giá Rẻ'), (N'CPU - Bộ Vi Xử Lý'), (N'VGA - Card Màn Hình'), (N'Linh Kiện Máy Tính'),
- (N'Màn Hình Máy Tính'), (N'Tản Nhiệt Cooling'), (N'Gaming Gear'), (N'Thiết Bị Mạng');
+INSERT INTO [dbo].[Category] (CategoryName, CategoryIcon) VALUES
+ (N'PC Giá Rẻ',           N'fa-solid fa-desktop'),
+ (N'CPU - Bộ Vi Xử Lý',   N'fa-solid fa-microchip'),
+ (N'VGA - Card Màn Hình', N'fa-solid fa-gamepad'),
+ (N'Linh Kiện Máy Tính',  N'fa-solid fa-screwdriver-wrench'),
+ (N'Màn Hình Máy Tính',   N'fa-solid fa-tv'),
+ (N'Tản Nhiệt Cooling',   N'fa-solid fa-fan'),
+ (N'Gaming Gear',         N'fa-solid fa-computer-mouse');
 
 ALTER AUTHORIZATION ON DATABASE::HoangHaPCVN TO sa;
