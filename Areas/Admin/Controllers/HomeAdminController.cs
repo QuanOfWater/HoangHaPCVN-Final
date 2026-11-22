@@ -28,7 +28,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
 
                 //Doanh thu = tổng tiền của các đơn hàng có trạng thái "Đã giao"
                 DoanhThu = db.Orders
-                    .Where(o => o.OrderStatus == "Đã giao")
+                    .Where(o => o.PaymentStatus == PaymentStatuses.DaThanhToan)
                     .Sum(o => (decimal?)o.TotalAmount) ?? 0,
                 
                 //Mỗi danh mục: Tên và số SP, danh mục có nhiều SP nhất đưa lên đầu

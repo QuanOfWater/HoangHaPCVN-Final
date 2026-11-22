@@ -108,6 +108,17 @@
                                 <button type="submit" class="mo-btn mo-btn-danger">Hủy đơn</button>
                             }
                         }
+
+                        @if (OrderStatuses.CanConfirmReceived(order.OrderStatus))
+                        {
+                            using (Html.BeginForm("ConfirmReceived", "Order", new { area = "", id = order.OrderID }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                                <button type="submit" class="mo-btn mo-btn-primary">Đã nhận được hàng</button>
+                            }
+                        }
+
                         @using (Html.BeginForm("BuyAgain", "Order", new { area = "", id = order.OrderID }, FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()

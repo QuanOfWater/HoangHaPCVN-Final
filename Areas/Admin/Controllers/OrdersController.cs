@@ -84,30 +84,43 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            //Chỉ nhận trạng thái có trong danh sách
-            if (OrderStatuses.All.Contains(orderStatus))
+            //Chỉ cho chuyển sang bước hợp lệ (chặn "Đã hủy" → "Đã giao"...)
+            if (!OrderStatuses.NextForAdmin(order).Contains(orderStatus))
             {
-                //Đơn đã hủy thì hàng đã về kho, không cho đổi lại
-                if (order.OrderStatus == "Đã hủy" && orderStatus != "Đã hủy")
-                {
-                    TempData["Message"] = "Đơn hàng đã hủy nên không thể đổi sang trạng thái khác.";
-                    return RedirectToAction("Details", new { id = id });
-                }
-
-                //Chuyển sang "Đã hủy": trả hàng về kho
-                if (orderStatus == "Đã hủy" && order.OrderStatus != "Đã hủy")
-                {
-                    foreach (var d in order.OrderDetails)
-                    {
-                        d.Product.Quantity += d.Quantity;
-                    }
-                }
-
-                order.OrderStatus = orderStatus;
-                db.SaveChanges();
-                TempData["Message"] = "Đã cập nhật trạng thái đơn hàng thành \"" + orderStatus + "\".";
+                TempData["Error"] = "Không thể chuyển đơn từ \"" + order.OrderStatus + "\" sang \"" + orderStatus + "\".";
+                return RedirectToAction("Details", new { id = id });
             }
 
+            OrderStatuses.ChuyenTrangThai(order, orderStatus); //Tự lo kho + trạng thái thanh toán
+            db.SaveChanges();
+            TempData["Message"] = "Đã cập nhật trạng thái đơn hàng thành \"" + orderStatus + "\".";
+            return RedirectToAction("Details", new { id = id });
+        }
+
+        // POST: Admin/Orders/ConfirmPayment/5
+        //Xác nhận đã nhận tiền chuyển khoản (đơn đang Chờ xử lý)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ConfirmPayment(int id)
+        {
+            Order order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (order.PaymentMethod == CheckoutOptions.ChuyenKhoan
+                && order.OrderStatus == OrderStatuses.ChoXuLy
+                && order.PaymentStatus != PaymentStatuses.DaThanhToan)
+            {
+                order.PaymentStatus = PaymentStatuses.DaThanhToan;
+                db.SaveChanges();
+                TempData["Message"] = "Đã xác nhận nhận tiền cho đơn #" + id + ". Bây giờ có thể chuyển sang \"Đã giao\".";
+            }
+            else
+            {
+                TempData["Error"] = "Đơn này không ở trạng thái chờ xác nhận tiền.";
+            }
             return RedirectToAction("Details", new { id = id });
         }
 

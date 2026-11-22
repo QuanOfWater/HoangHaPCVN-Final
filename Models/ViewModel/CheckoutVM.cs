@@ -36,8 +36,7 @@ namespace HoangHaPCVN.Models.ViewModel
     {
         public const string COD = "Thanh toán khi nhận hàng (COD)";
         public const string ChuyenKhoan = "Chuyển khoản ngân hàng (Internet Banking)";
-        public const string TraSau = "Mua trước trả sau (BNPL)";
-        public static readonly string[] PaymentMethods = { COD, ChuyenKhoan, TraSau };
+        public static readonly string[] PaymentMethods = { COD, ChuyenKhoan };
         public static readonly string[] DeliveryMethods = { "Giao hàng tiêu chuẩn (3 - 5 ngày)", "Giao hàng hỏa tốc (Lấy trong ngày)" };
     }
 }

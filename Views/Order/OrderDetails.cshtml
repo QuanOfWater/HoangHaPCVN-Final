@@ -22,26 +22,36 @@
 
     @Html.Partial("_PVOrderInfo", Model)
 
-    <div class="order-actions">
-        <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="order-act-outline">‹ Đơn hàng của tôi</a>
+<div class="order-actions">
+    <a href="@Url.Action("MyOrder", "Order", new { area = "" })" class="order-act-outline">‹ Đơn hàng của tôi</a>
 
-        @using (Html.BeginForm("BuyAgain", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post))
+    @using (Html.BeginForm("BuyAgain", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <button type="submit" class="order-act-primary">Mua lại</button>
+    }
+
+    @if (OrderStatuses.CanCancel(Model.OrderStatus))
+    {
+        using (Html.BeginForm("CancelOrder", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post,
+            new { data_confirm = "Bạn chắc chắn muốn hủy đơn hàng #" + Model.OrderID + "?" }))
         {
             @Html.AntiForgeryToken()
-            <button type="submit" class="order-act-primary">Mua lại</button>
+            <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+            <button type="submit" class="order-act-danger">Hủy đơn hàng</button>
         }
+    }
 
-        @if (OrderStatuses.CanCancel(Model.OrderStatus))
+    @if (OrderStatuses.CanConfirmReceived(Model.OrderStatus))
+    {
+        using (Html.BeginForm("ConfirmReceived", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post))
         {
-            using (Html.BeginForm("CancelOrder", "Order", new { area = "", id = Model.OrderID }, FormMethod.Post,
-                new { data_confirm = "Bạn chắc chắn muốn hủy đơn hàng #" + Model.OrderID + "?" }))
-            {
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
-                <button type="submit" class="order-act-danger">Hủy đơn hàng</button>
-            }
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+            <button type="submit" class="order-act-primary">Đã nhận được hàng</button>
         }
-    </div>
+    }
+</div>
 </div>
 
 @section scripts {

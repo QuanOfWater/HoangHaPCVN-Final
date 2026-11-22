@@ -143,24 +143,6 @@ namespace HoangHaPCVN.Controllers
 
             if (ModelState.IsValid)
             {
-                //Trạng thái thanh toán và trạng thái đơn theo hình thức thanh toán
-                string paymentStatus, orderStatus;
-                switch (model.PaymentMethod)
-                {
-                    case CheckoutOptions.ChuyenKhoan:
-                        paymentStatus = "Chờ chuyển khoản";
-                        orderStatus = "Chờ thanh toán";
-                        break;
-                    case CheckoutOptions.TraSau:
-                        paymentStatus = "Trả góp";
-                        orderStatus = "Đang xử lý";
-                        break;
-                    default: //COD
-                        paymentStatus = "Thanh toán khi nhận hàng";
-                        orderStatus = "Đang xử lý";
-                        break;
-                }
-
                 var order = new Order
                 {
                     CustomerID = (int)Session["CustomerID"],
@@ -169,8 +151,8 @@ namespace HoangHaPCVN.Controllers
                     ShippingAddress = model.ShippingAddress.Trim(),
                     DeliveryMethod = model.DeliveryMethod,
                     PaymentMethod = model.PaymentMethod,
-                    PaymentStatus = paymentStatus,
-                    OrderStatus = orderStatus,
+                    PaymentStatus = PaymentStatuses.ChuaThanhToan,
+                    OrderStatus = OrderStatuses.ChoXuLy,
                     //Chi tiết đơn: KHÔNG gán TotalPrice vì SQL tự tính (Quantity * UnitPrice)
                     OrderDetails = items.Select(i => new OrderDetail
                     {
@@ -319,26 +301,54 @@ namespace HoangHaPCVN.Controllers
                 return HttpNotFound();
             }
 
-            //Kiểm tra lại ở server: đơn đang vận chuyển / đã giao thì không cho hủy
+            //Kiểm tra lại ở server: chỉ đơn "Chờ xử lý" mới được hủy
             if (OrderStatuses.CanCancel(order.OrderStatus))
             {
-                order.OrderStatus = "Đã hủy";
-                //Trả hàng của đơn về kho
-                foreach (var d in order.OrderDetails)
-                {
-                    d.Product.Quantity += d.Quantity;
-                }
+                bool daTraTien = order.PaymentStatus == PaymentStatuses.DaThanhToan;
+                OrderStatuses.ChuyenTrangThai(order, OrderStatuses.DaHuy); //Tự trả hàng về kho
                 db.SaveChanges();
-                TempData["AccountMessage"] = "Đã hủy đơn hàng #" + id + ".";
+                TempData["AccountMessage"] = "Đã hủy đơn hàng #" + id + "."
+                    + (daTraTien ? " Cửa hàng sẽ hoàn tiền cho bạn trong thời gian sớm nhất." : "");
             }
             else
             {
-                TempData["AccountMessage"] = "Đơn hàng #" + id + " đang được giao hoặc đã kết thúc nên không thể hủy.";
+                TempData["AccountMessage"] = "Đơn hàng #" + id + " đã được giao hoặc đã kết thúc nên không thể hủy.";
             }
 
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl); //Quay lại đúng tab / trang đang xem
+            }
+            return RedirectToAction("MyOrder");
+        }
+
+        // POST: Order/ConfirmReceived/5
+        //Khách xác nhận đã nhận được hàng (chỉ khi đơn "Thanh toán xong")
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ConfirmReceived(int id, string returnUrl)
+        {
+            int customerId = (int)Session["CustomerID"];
+            var order = db.Orders.SingleOrDefault(o => o.OrderID == id && o.CustomerID == customerId);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (OrderStatuses.CanConfirmReceived(order.OrderStatus))
+            {
+                OrderStatuses.ChuyenTrangThai(order, OrderStatuses.DaNhanHang);
+                db.SaveChanges();
+                TempData["AccountMessage"] = "Cảm ơn bạn đã xác nhận nhận đơn hàng #" + id + ".";
+            }
+            else
+            {
+                TempData["AccountMessage"] = "Đơn hàng #" + id + " chưa thể xác nhận đã nhận.";
+            }
+
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
             }
             return RedirectToAction("MyOrder");
         }

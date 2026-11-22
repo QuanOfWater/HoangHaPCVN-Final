@@ -537,22 +537,22 @@
     }
 
 /* Màu nhãn trạng thái đơn (đọc từ thuộc tính data-status) */
-.order-status[data-status="Chờ thanh toán"] {
+.order-status[data-status="Chờ xử lý"] {
     background-color: #fff4e0;
     color: #b26a00;
 }
 
-.order-status[data-status="Đang xử lý"] {
+.order-status[data-status="Đã giao"] {
     background-color: #e8f1ff;
     color: #1d5fd0;
 }
 
-.order-status[data-status="Đang vận chuyển"] {
+.order-status[data-status="Thanh toán xong"] {
     background-color: #efe9ff;
     color: #6a3fc8;
 }
 
-.order-status[data-status="Đã giao"] {
+.order-status[data-status="Đã nhận hàng"] {
     background-color: #e7f6ec;
     color: #146c2e;
 }
@@ -561,6 +561,21 @@
     background-color: #f1f2f4;
     color: #777;
 }
+
+.order-status[data-status="Hoàn tiền"] {
+    background-color: #fdecea;
+    color: #b3261e;
+}
+
+/* Nút chính trên thẻ đơn (Đã nhận được hàng) */
+.mo-btn-primary {
+    background-color: #2f7df0;
+    color: #fff;
+}
+
+    .mo-btn-primary:hover {
+        background-color: #1b5ce0;
+    }
 
 /* Nút dạng <button> ở trang Chi tiết đơn trông giống nút dạng <a> */
 .order-actions button {
