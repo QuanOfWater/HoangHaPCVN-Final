@@ -154,6 +154,63 @@ namespace HoangHaPCVN.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
+        //QUÊN MẬT KHẨU
+        private const int SoLanSaiToiDa = 5;
+
+        // GET: Account/ForgotPassword
+        public ActionResult ForgotPassword()
+        {
+            if (DaDangNhap())
+            {
+                return RedirectToAction("ProfileInfo"); //Đã đăng nhập thì đổi mật khẩu ở trang tài khoản
+            }
+            return View();
+        }
+
+        // POST: Account/ForgotPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForgotPassword(ForgotPasswordVM model)
+        {
+            //Đếm số lần nhập sai trong phiên này (chống dò thông tin)
+            int soLanSai = Session["ForgotFail"] as int? ?? 0;
+            if (soLanSai >= SoLanSaiToiDa)
+            {
+                ModelState.AddModelError("", "Bạn đã nhập sai quá " + SoLanSaiToiDa + " lần. Vui lòng thử lại sau hoặc liên hệ hotline.");
+                return View(model);
+            }
+
+            if (ModelState.IsValid)
+            {
+                //Chỉ tài khoản khách hàng
+                var user = db.Users.SingleOrDefault(u => u.Username == model.Username && u.UserRole == RoleCustomer);
+                var customer = user == null ? null
+                    : db.Customers.FirstOrDefault(c => c.Username == user.Username);
+
+                //So sánh trong C#: SĐT phải giống hệt, email không phân biệt hoa/thường
+                bool khop = customer != null
+                    && customer.CustomerPhone == model.CustomerPhone.Trim()
+                    && string.Equals(customer.CustomerEmail, model.CustomerEmail.Trim(), System.StringComparison.OrdinalIgnoreCase);
+
+                if (khop)
+                {
+                    user.Password = model.NewPassword;
+                    db.SaveChanges();
+                    Session.Remove("ForgotFail");
+
+                    TempData["AccountMessage"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.";
+                    TempData["NewUsername"] = user.Username;
+                    return RedirectToAction("Login");
+                }
+
+                //Báo lỗi chung, không nói rõ ô nào sai
+                Session["ForgotFail"] = soLanSai + 1;
+                ModelState.AddModelError("", "Thông tin không khớp với tài khoản nào. Còn "
+                    + (SoLanSaiToiDa - soLanSai - 1) + " lần thử.");
+            }
+
+            return View(model);
+        }
 
         //ĐĂNG XUẤT
         // POST: Account/Logout

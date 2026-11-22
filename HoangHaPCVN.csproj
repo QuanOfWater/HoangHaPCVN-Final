@@ -201,6 +201,7 @@
     <Compile Include="Models\ViewModel\CheckoutVM.cs" />
     <Compile Include="Models\ViewModel\CustomerSearchVM.cs" />
     <Compile Include="Models\ViewModel\DashBoardVM.cs" />
+    <Compile Include="Models\ViewModel\ForgotPasswordVM.cs" />
     <Compile Include="Models\ViewModel\HomeProductVM.cs" />
     <Compile Include="Models\ViewModel\InventoryVM.cs" />
     <Compile Include="Models\ViewModel\LoginVM.cs" />
@@ -431,6 +432,7 @@
     <Content Include="Views\Order\OrderDetails.cshtml" />
     <Content Include="Views\Order\MyOrder.cshtml" />
     <Content Include="Views\Shared\_PVBankTransfer.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

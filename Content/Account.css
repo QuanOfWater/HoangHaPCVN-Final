@@ -233,3 +233,9 @@
             gap: 0;
         }
 }
+
+/* Dòng "Nhớ ra mật khẩu? Đăng nhập" dưới form Quên mật khẩu */
+.account-forgot {
+    margin: 16px 0 0;
+    text-align: center;
+}
