@@ -31,6 +31,10 @@ namespace HoangHaPCVN.Models.ViewModel
             "Đã giao",
             "Đã hủy"
         };
+
+        //Các đơn hàng ở trạng thái này không được tính vào "Số lượng đã bán"
+        public static readonly string[] Cancelled = { "Đã hủy" };
+
         //Khách chỉ được hủy khi cửa hàng chưa giao đơn cho bên vận chuyển
         public static bool CanCancel(string status)
         {

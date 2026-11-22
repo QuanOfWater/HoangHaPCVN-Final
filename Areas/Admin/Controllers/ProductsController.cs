@@ -42,8 +42,8 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             //Tìm sản phẩm có giá thấp nhất
             if (minPrice.HasValue)
             {
-                model.MaxPrice = minPrice.Value;
-                products = products.Where(p => p.ProductPrice >= maxPrice.Value);
+                model.MinPrice = minPrice.Value;
+                products = products.Where(p => p.ProductPrice >= minPrice.Value);
             }
 
             //Tìm sản phẩm có giá cao dần
@@ -60,13 +60,13 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
                     products = products.OrderBy (p => p.ProductName);
                     break;
                 case "name_desc":
-                    products = products.OrderBy (p => p.ProductName);
+                    products = products.OrderByDescending(p => p.ProductName);
                     break;
                 case "price_asc":
                     products = products.OrderBy (p => p.ProductPrice);
                     break;
                 case "price_desc":
-                    products = products.OrderBy (p => p.ProductPrice);
+                    products = products.OrderByDescending(p => p.ProductPrice);
                     break;
                 default: //Xếp mặc định theo tên
                     products = products.OrderBy (p => p.ProductName);
@@ -126,7 +126,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg")] Product product)
+        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg,Quantity")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -185,10 +185,15 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
                 if (ModelState.IsValid)
                 {
                     db.Entry(product).State = EntityState.Modified;
+                    //Không được cập nhập tồn kho từ form sửa (chỉ đổi ở các trang kho hàng/khi đặt, hủy đơn)
+                    db.Entry(product).Property(p => p.Quantity).IsModified = false;
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
+            //Ô tồn kho ở trang sửa chỉ để xem
+            product.Quantity = db.Products.Where(p => p.ProductID == product.ProductID)
+                                         .Select(p => p.Quantity).FirstOrDefault();
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
             return View(product);
         }

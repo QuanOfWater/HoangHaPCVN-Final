@@ -24,6 +24,23 @@
     @Html.ValidationMessageFor(model => model.ProductPrice, "", new { @class = "text-danger" })
 </div>
 
+@* Số lượng tồn: Chỉ nhập khi thêm mới; khi sửa thì chỉ xem, thay đổi ở trang Kho hàng *@
+<div class="mb-3">
+    <label class="form-label fw-bold">Số lượng tồn</label>
+    @if (Model == null || Model.ProductID == 0)
+    {
+        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control", min = "0", max = "100000" } })
+        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+    }
+    else
+    {
+        <input type="text" class="form-control" value="@Model.Quantity" readonly />
+        <div class="form-text">
+            Muốn thay đổi tồn kho, vào @Html.ActionLink("Kho hàng", "Index", "Inventory") để nhập thêm hàng.
+        </div>
+    }
+</div>
+
 @* Không preview ảnh trước khi upload *@
 <div class="mb-3">
     <label class="form-label fw-bold">Hình ảnh</label>

@@ -1,0 +1,47 @@
+﻿@model HoangHaPCVN.Models.ViewModel.InventoryVM
+
+@{
+    ViewBag.Title = "Quản lý kho";
+}
+
+<h2 class="bg-success text-white p-2">QUẢN LÝ KHO HÀNG</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@* Tìm kiếm *@
+<form method="get" action="@Url.Action("Index")" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control"
+               placeholder="Tìm theo tên sản phẩm hoặc danh mục" maxlength="100" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Tìm</button>
+        @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
+</form>
+
+@* Thống kê nhanh *@
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="border rounded p-3 bg-light">Còn hàng: <strong>@Model.InStock.Count</strong> sản phẩm</div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded p-3 bg-light">Cần nhập: <strong class="text-danger">@Model.OutOfStock.Count</strong> sản phẩm</div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded p-3 bg-light">Tổng tồn kho: <strong>@Model.InStock.Sum(r => r.Quantity)</strong> cái</div>
+    </div>
+</div>
+
+<h4 class="text-success">Danh sách hàng tồn (tồn kho &gt; 0)</h4>
+@Html.Partial("_PVStockList", Model.InStock)
+
+<h4 class="text-danger mt-4">Danh sách hàng cần nhập (tồn kho = 0)</h4>
+@Html.Partial("_PVStockList", Model.OutOfStock)

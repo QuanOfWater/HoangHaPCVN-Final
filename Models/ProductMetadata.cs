@@ -28,5 +28,10 @@ namespace HoangHaPCVN.Models
         [Range(typeof(decimal), "1000", "1000000000", ErrorMessage = "Đơn giá từ 1.000 đ đến 1.000.000.000 đ")]
         [Display(Name = "Đơn giá")]
         public decimal ProductPrice { get; set; }
+
+        [Required(ErrorMessage = "Vui lòng nhập số lượng tồn kho")]
+        [Range(0, 100000, ErrorMessage = "Số lượng tồn từ 0 đến 100.000 SP")]
+        [Display(Name = "Số lượng tồn")]
+        public int Quantity { get; set; }
     }
 }

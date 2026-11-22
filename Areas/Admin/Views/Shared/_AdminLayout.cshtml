@@ -39,6 +39,7 @@
                     @MenuItem("Tổng quan", "HomeAdmin", currentController)
                     @MenuItem("Danh mục", "Categories", currentController)
                     @MenuItem("Sản phẩm", "Products", currentController)
+                    <li class="nav-item">@Html.ActionLink("Kho hàng", "Index", "Inventory", new { area = "Admin" }, new { @class = "nav-link" })</li>
                     @MenuItem("Khách hàng", "Customers", currentController)
                     @MenuItem("Đơn hàng", "Orders", currentController)
                     @MenuItem("Tài khoản", "Users", currentController)

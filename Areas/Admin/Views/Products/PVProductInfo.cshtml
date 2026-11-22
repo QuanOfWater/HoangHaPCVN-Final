@@ -23,6 +23,9 @@
             <dt class="col-sm-3">Đơn giá</dt>
             <dd class="col-sm-9">@Model.ProductPrice.ToString("N0") đ</dd>
 
+            <dt class="col-sm-3">Số lượng tồn</dt>
+            <dd class="col-sm-9">@Model.Quantity</dd>
+
             <dt class="col-sm-3">Danh mục</dt>
             <dd class="col-sm-9">@Html.DisplayFor(model => model.Category.CategoryName)</dd>
         </dl>

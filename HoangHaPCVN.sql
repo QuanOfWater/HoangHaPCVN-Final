@@ -78,4 +78,13 @@ INSERT INTO [dbo].[Category] (CategoryName, CategoryIcon) VALUES
  (N'Tản Nhiệt Cooling',   N'fa-solid fa-fan'),
  (N'Gaming Gear',         N'fa-solid fa-computer-mouse');
 
+ -- Kiem tra luat trong ProductMetadata
+USE HoangHaPCVN;
+GO
+SELECT ProductID, ProductName, ProductPrice, LEN(ProductName) AS DoDaiTen
+FROM [dbo].[Product]
+WHERE ProductPrice < 1000 OR ProductPrice > 1000000000
+   OR LEN(ProductName) < 3 OR LEN(ProductName) > 200
+   OR ProductDescription IS NULL OR LTRIM(RTRIM(ProductDescription)) = '';
+
 ALTER AUTHORIZATION ON DATABASE::HoangHaPCVN TO sa;

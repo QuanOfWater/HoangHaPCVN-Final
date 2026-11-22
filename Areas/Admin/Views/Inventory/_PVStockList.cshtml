@@ -1,0 +1,57 @@
+﻿@model List<HoangHaPCVN.Models.ViewModel.StockRowVM>
+
+@* Bảng kho dùng chung cho 2 danh sách: Hàng tồn và Hàng cần nhập *@
+@if (!Model.Any())
+{
+    <p class="text-muted">Không có sản phẩm nào.</p>
+}
+else
+{
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 90px">Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th style="width: 180px">Danh mục</th>
+                <th style="width: 110px" class="text-end">Tồn kho</th>
+                <th style="width: 100px" class="text-end">Đã bán</th>
+                <th style="width: 220px">Nhập thêm hàng</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                string anh = string.IsNullOrEmpty(r.ProductImage)
+                    ? "~/Content/images/default_img.png"
+                    : r.ProductImage;
+                <tr>
+                    <td><img src="@Url.Content(anh)" alt="@r.ProductName" style="height: 60px; max-width: 80px; object-fit: contain" /></td>
+                    <td>@Html.ActionLink(r.ProductName, "Details", "Products", new { id = r.ProductID }, null)</td>
+                    <td>@r.CategoryName</td>
+                    <td class="text-end">
+                        @r.Quantity
+                        @if (r.Quantity == 0)
+                        {
+                            <span class="badge bg-danger ms-1">Hết hàng</span>
+                        }
+                        else if (r.Quantity <= 5)
+                        {
+                            <span class="badge bg-warning text-dark ms-1">Sắp hết</span>
+                        }
+                    </td>
+                    <td class="text-end">@r.Sold</td>
+                    <td>
+                        @using (Html.BeginForm("Import", "Inventory", new { id = r.ProductID, searchTerm = ViewBag.SearchTerm as string },
+                            FormMethod.Post, new { @class = "d-flex gap-2" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="number" name="amount" min="1" max="10000" required
+                                   class="form-control form-control-sm" style="width: 100px" placeholder="Số lượng" />
+                            <button type="submit" class="btn btn-success btn-sm">Nhập</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
