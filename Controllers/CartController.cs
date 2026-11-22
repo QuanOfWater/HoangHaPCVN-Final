@@ -50,27 +50,6 @@ namespace HoangHaPCVN.Controllers
                 ViewBag.StockMessage = "Một số sản phẩm trong giỏ đã được giảm số lượng cho khớp với tồn kho.";
             }
 
-            //Làm mới kho của từng món trong giỏ
-            var tonKho = db.Products
-                .Where(p => productIds.Contains(p.ProductID))
-                .Select(p => new { p.ProductID, p.Quantity })
-                .ToDictionary(x => x.ProductID, x => x.Quantity);
-
-            bool daGiam = false;
-            foreach (var item in cart.Items)
-            {
-                item.Stock = tonKho.ContainsKey(item.ProductID) ? tonKho[item.ProductID] : 0;
-                if (item.Stock > 0 && item.Quantity > item.Stock)
-                {
-                    item.Quantity = item.Stock; //Giảm về đúng số còn trong kho
-                    daGiam = true;
-                }
-            }
-            if (daGiam)
-            {
-                ViewBag.StockMessage = "Một số sản phẩm trong giỏ đã được giảm số lượng cho khớp với tồn kho.";
-            }
-
             //Sản phẩm tương tự: Cùng danh mục, chưa có trong giỏ, CÒN HÀNG
             var similarProducts = db.Products
                 .Include(p => p.Category)
@@ -137,17 +116,15 @@ namespace HoangHaPCVN.Controllers
         public ActionResult UpdateQuantity(int id, int quantity, int? change)
         {
             int soLuongMoi = quantity + (change ?? 0);
-            GetCartService().GetCart().UpdateQuantity(id, soLuongMoi);
-            return RedirectToAction("Index");
-        }
+            int tonKho = db.Products.Where(p => p.ProductID == id)
+                                    .Select(p => p.Quantity).FirstOrDefault();
 
-        // POST: Cart/RemoveFromCart
-        //Xóa 1 sản phẩm khỏi giỏ
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult RemoveFromCart(int id)
-        {
-            GetCartService().GetCart().RemoveItem(id);
+            GetCartService().GetCart().UpdateQuantity(id, soLuongMoi, tonKho);
+
+            if (tonKho > 0 && soLuongMoi > Math.Min(Cart.MaxQuantity, tonKho))
+            {
+                TempData["CartMessage"] = "Kho chỉ còn " + tonKho + " sản phẩm này.";
+            }
             return RedirectToAction("Index");
         }
 

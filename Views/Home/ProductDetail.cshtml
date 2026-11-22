@@ -70,7 +70,32 @@
         }
         else
         {
-            
+            @* Phần tạm tính.
+            Có JavaScript: bấm - / + hoặc gõ số là tạm tính đổi ngay.
+            Không có JavaScript: bấm "Cập nhật" để tải lại trang và tính lại. *@
+            <form method="get" action="@Url.Action("ProductDetail", "Home", new { area = "", id = Model.Product.ProductID })">
+                <label for="quantity">Số lượng</label>
+                <div class="pd-qty">
+                    <button type="button" class="pd-qty-btn" id="btnGiam" aria-label="Giảm số lượng" hidden>−</button>
+                    <input type="number" id="quantity" name="quantity" value="@Model.Quantity" min="1" max="@toiDa" />
+                    <button type="button" class="pd-qty-btn" id="btnTang" aria-label="Tăng số lượng" hidden>+</button>
+                    <button type="submit" class="pd-btn-outline" id="btnCapNhat">Cập nhật</button>
+                </div>
+            </form>
+
+            <div class="pd-subtotal">
+                Tạm tính: <strong id="tamTinh">@Model.EstimatedValue.ToString("N0", vn) đ</strong>
+            </div>
+
+            @* Thêm vào giỏ hàng: gửi mã sản phẩm và số lượng sang CartController *@
+            <form method="post" action="@Url.Action("AddToCart", "Cart", new { area = "" })">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productId" value="@Model.Product.ProductID" />
+                <input type="hidden" id="qtyHidden" name="quantity" value="@Model.Quantity" />
+                <button type="submit" class="pd-btn-primary">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+            </form>
         }
     </div>
 
