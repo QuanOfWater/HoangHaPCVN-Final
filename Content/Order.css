@@ -616,3 +616,49 @@
         display: none;
     }
 }
+/* Khối chuyển khoản + mã QR */
+.order-bank h2 i {
+    color: #2f7df0;
+}
+
+.order-bank-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+}
+
+.order-bank-qr {
+    width: 240px;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.order-bank-body .order-info {
+    flex: 1;
+    min-width: 240px;
+}
+
+/* Dòng nhắc chuyển khoản trên thẻ đơn (Đơn hàng của tôi) */
+.mo-pay-hint {
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #fff4e0;
+    color: #8a5300;
+    font-size: 13px;
+}
+
+    .mo-pay-hint a {
+        color: #2f7df0;
+        font-weight: bold;
+    }
+
+/* Ghi chú dưới lựa chọn thanh toán ở trang Thanh toán */
+.order-option .order-hint {
+    display: block;
+    margin-top: 2px;
+}

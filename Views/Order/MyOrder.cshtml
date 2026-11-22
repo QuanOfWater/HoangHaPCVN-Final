@@ -70,6 +70,13 @@
                     <b class="order-status" data-status="@order.OrderStatus">@order.OrderStatus</b>
                     <span class="mo-order-code">Đơn #@order.OrderID · @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
                 </header>
+                @if (HoangHaPCVN.Models.BankInfo.ChoChuyenKhoan(order))
+                {
+                    <p class="mo-pay-hint">
+                        <i class="fa-solid fa-qrcode"></i> Đơn đang chờ chuyển khoản.
+                        <a href="@Url.Action("OrderDetails", new { id = order.OrderID })">Xem mã QR</a>
+                    </p>
+                }
 
                 @foreach (var d in chiTiet.Take(soSPHien))
                 {

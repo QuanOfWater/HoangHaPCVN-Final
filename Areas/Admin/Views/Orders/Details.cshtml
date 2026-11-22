@@ -107,7 +107,11 @@
 
     @if (choXacNhanTien)
     {
-        <div class="alert alert-warning py-2 mb-2">Đơn chuyển khoản: cần xác nhận đã nhận tiền trước khi giao hàng.</div>
+        <div class="alert alert-warning py-2 mb-2">
+            Đơn chuyển khoản: cần xác nhận đã nhận tiền trước khi giao hàng.
+            Đối chiếu khoản tiền <strong>@Model.TotalAmount.ToString("N0") đ</strong>
+            với nội dung <strong>@HoangHaPCVN.Models.BankInfo.NoiDungCK(Model.OrderID)</strong>.
+        </div>
         using (Html.BeginForm("ConfirmPayment", "Orders", new { id = Model.OrderID }, FormMethod.Post, new { @class = "mb-2" }))
         {
             @Html.AntiForgeryToken()
@@ -136,3 +140,4 @@
         }
     }
 </div>
+@Html.ActionLink("Quay lại danh sách đơn", "Index", null, new { @class = "btn btn-secondary" })

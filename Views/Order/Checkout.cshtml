@@ -57,7 +57,13 @@
                     string pmt = CheckoutOptions.PaymentMethods[i];
                     <label class="order-option">
                         @Html.RadioButtonFor(m => m.PaymentMethod, pmt, new { id = "pm" + i })
-                        <span>@pmt</span>
+                        <span>
+                            @pmt
+                            @if (pmt == CheckoutOptions.ChuyenKhoan)
+                            {
+                                <small class="order-hint d-block">Mã QR chuyển khoản sẽ hiện sau khi đặt hàng.</small>
+                            }
+                        </span>
                     </label>
                 }
                 @Html.ValidationMessageFor(m => m.PaymentMethod)

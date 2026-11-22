@@ -1,0 +1,29 @@
+﻿@model HoangHaPCVN.Models.Order
+@using HoangHaPCVN.Models
+@{
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+@* Chỉ hiện khi đơn chuyển khoản đang chờ khách trả tiền *@
+@if (BankInfo.ChoChuyenKhoan(Model))
+{
+    <section class="order-card order-bank">
+        <h2><i class="fa-solid fa-qrcode"></i> Thanh toán chuyển khoản</h2>
+        <div class="order-bank-body">
+            <img class="order-bank-qr" src="@BankInfo.QrUrl(Model)"
+                 alt="Mã QR chuyển khoản đơn #@Model.OrderID" width="240" height="240" />
+            <div class="order-info">
+                <div><small>Ngân hàng</small>@BankInfo.BankName</div>
+                <div><small>Số tài khoản</small><b>@BankInfo.AccountNo</b></div>
+                <div class="full"><small>Chủ tài khoản</small>@BankInfo.AccountName</div>
+                <div><small>Số tiền</small><b class="order-total-money">@Model.TotalAmount.ToString("N0", vn) đ</b></div>
+                <div><small>Nội dung chuyển khoản</small><b>@BankInfo.NoiDungCK(Model.OrderID)</b></div>
+            </div>
+        </div>
+        <p class="order-hint">
+            Mở ứng dụng ngân hàng và quét mã QR (số tiền, nội dung đã điền sẵn).
+            Khi nhận được tiền, Hoàng Hà PC sẽ xác nhận và giao hàng cho bạn.
+            <br /><em>(Bản demo: số tài khoản là giả, vui lòng không chuyển tiền thật.)</em>
+        </p>
+    </section>
+}
