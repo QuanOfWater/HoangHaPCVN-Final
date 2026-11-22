@@ -1,0 +1,780 @@
+﻿/* ===== GIAO DIỆN QUẢN TRỊ – TÔNG XÁM ĐEN =====
+   Tối giản: viền mảnh 1px, bo góc nhỏ, không đổ bóng, không icon, 1 màu nhấn. */
+:root {
+    --ad-accent: #3b82f6;
+    --ad-accent-soft: rgba(59, 130, 246, .12);
+    --ad-text: #ededef;
+    --ad-muted: #9b9ba4;
+    --ad-faint: #6b6b74;
+    --ad-border: #26262b;
+    --ad-border-hover: #3a3a41;
+    --ad-bg: #0c0c0e;
+    --ad-surface: #151518;
+    --ad-surface-2: #1c1c20;
+    --ad-radius: 6px;
+}
+
+.admin-body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* để footer luôn nằm cuối trang */
+    background: var(--ad-bg);
+    color: var(--ad-text);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+
+    .admin-body a {
+        color: inherit;
+    }
+
+/* ================= THANH MENU ================= */
+.ad-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0;
+    background: rgba(12, 12, 14, .85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--ad-border);
+}
+
+    .ad-topbar .container {
+        min-height: 60px;
+    }
+
+.ad-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 28px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    color: var(--ad-text) !important;
+}
+
+/* Logo (không phải icon): ảnh gốc có cả chữ, chỉ cắt lấy hình thoi bên trái */
+.ad-brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ad-radius);
+    background: var(--ad-surface-2);
+    border: 1px solid var(--ad-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .ad-brand-icon span {
+        width: 18px;
+        height: 22px;
+        overflow: hidden;
+    }
+
+    .ad-brand-icon img {
+        height: 22px;
+        width: auto;
+        max-width: none;
+        display: block;
+    }
+
+/* Mục menu dạng "viên thuốc", mục đang mở có nền nhạt */
+.ad-topbar .navbar-nav {
+    gap: 2px;
+}
+
+    .ad-topbar .navbar-nav .nav-link {
+        padding: 7px 12px;
+        border-radius: var(--ad-radius);
+        color: var(--ad-muted);
+        font-size: .9rem;
+        transition: color .15s, background .15s;
+    }
+
+        .ad-topbar .navbar-nav .nav-link:hover {
+            color: var(--ad-text);
+            background: var(--ad-surface);
+        }
+
+        .ad-topbar .navbar-nav .nav-link.active {
+            color: var(--ad-text);
+            background: var(--ad-surface-2);
+        }
+
+/* Tài khoản bên phải: [A] admin | Đăng xuất */
+.ad-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    font-size: .9rem;
+}
+
+.ad-user-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ad-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ad-accent-soft);
+    color: #93c5fd;
+    font-size: .78rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.ad-user-sep {
+    width: 1px;
+    height: 18px;
+    background: var(--ad-border);
+}
+
+.ad-logout {
+    color: var(--ad-muted) !important;
+    text-decoration: none;
+}
+
+    .ad-logout:hover {
+        color: #f87171 !important;
+    }
+
+.ad-topbar .navbar-toggler {
+    border: 1px solid var(--ad-border);
+    border-radius: var(--ad-radius);
+    padding: 4px 8px;
+    filter: invert(1);
+}
+
+    .ad-topbar .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+/* ================= VÙNG NỘI DUNG ================= */
+.admin-main {
+    flex: 1;
+    padding-top: 36px;
+    padding-bottom: 40px;
+}
+
+    /* Tiêu đề thanh màu có sẵn ở các view -> tiêu đề chữ gọn */
+    .admin-main h2.bg-success,
+    .admin-main h2.bg-danger,
+    .admin-main h2.bg-primary {
+        background: transparent !important;
+        color: var(--ad-text) !important;
+        padding: 0 0 14px !important;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--ad-border);
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .admin-main h2.bg-danger {
+        color: #f87171 !important;
+    }
+
+/* ================= BOOTSTRAP trên nền tối ================= */
+.admin-body .card,
+.admin-body .alert,
+.admin-body .btn,
+.admin-body .form-control,
+.admin-body .form-select,
+.admin-body .pagination .page-link {
+    border-radius: var(--ad-radius);
+    box-shadow: none;
+}
+
+/* Nút chính: trắng chữ đen, nhìn sạch trên nền tối */
+.admin-body .btn-primary,
+.admin-body .btn-success {
+    background: var(--ad-text);
+    border-color: var(--ad-text);
+    color: #0c0c0e;
+    font-weight: 500;
+}
+
+    .admin-body .btn-primary:hover,
+    .admin-body .btn-success:hover {
+        background: #fff;
+        border-color: #fff;
+        color: #0c0c0e;
+    }
+
+/* Nút viền: viền xám, chữ sáng */
+.admin-body .btn-outline-primary,
+.admin-body .btn-outline-secondary,
+.admin-body .btn-secondary,
+.admin-body .btn-info,
+.admin-body .btn-warning {
+    background: transparent;
+    border-color: var(--ad-border-hover);
+    color: var(--ad-text);
+}
+
+    .admin-body .btn-outline-primary:hover,
+    .admin-body .btn-outline-secondary:hover,
+    .admin-body .btn-secondary:hover,
+    .admin-body .btn-info:hover,
+    .admin-body .btn-warning:hover {
+        background: var(--ad-surface-2);
+        border-color: var(--ad-border-hover);
+        color: var(--ad-text);
+    }
+
+.admin-body .btn-outline-danger,
+.admin-body .btn-danger {
+    background: transparent;
+    border-color: rgba(248, 113, 113, .35);
+    color: #f87171;
+}
+
+    .admin-body .btn-outline-danger:hover,
+    .admin-body .btn-danger:hover {
+        background: rgba(248, 113, 113, .1);
+        border-color: rgba(248, 113, 113, .5);
+        color: #fca5a5;
+    }
+
+/* Ô nhập, dropdown */
+.admin-body .form-control,
+.admin-body .form-select {
+    background-color: var(--ad-surface);
+    border-color: var(--ad-border);
+    color: var(--ad-text);
+}
+
+    .admin-body .form-control::placeholder {
+        color: var(--ad-faint);
+    }
+
+    .admin-body .form-control:focus,
+    .admin-body .form-select:focus {
+        background-color: var(--ad-surface);
+        border-color: var(--ad-accent);
+        color: var(--ad-text);
+        box-shadow: 0 0 0 3px var(--ad-accent-soft);
+    }
+
+/* Thông báo */
+.admin-body .alert {
+    background: var(--ad-surface);
+    border: 1px solid var(--ad-border);
+    color: var(--ad-text);
+}
+
+.admin-body .alert-success {
+    border-left: 3px solid #22c55e;
+}
+
+.admin-body .alert-danger,
+.admin-body .alert-warning {
+    border-left: 3px solid #f87171;
+}
+
+/* Bảng */
+.admin-body .table {
+    --bs-table-bg: var(--ad-surface);
+    --bs-table-color: var(--ad-text);
+    --bs-table-hover-bg: var(--ad-surface-2);
+    --bs-table-hover-color: var(--ad-text);
+    border: 1px solid var(--ad-border);
+    font-size: .9rem;
+}
+
+    .admin-body .table > :not(caption) > * > * {
+        padding: 12px 14px;
+        border-color: var(--ad-border);
+        vertical-align: middle;
+    }
+
+    .admin-body .table tbody tr:hover > * {
+        background: var(--ad-surface-2);
+    }
+
+    /* Dòng tiêu đề: <thead>, hoặc dòng <th> đầu tiên với bảng không có <thead> (bảng scaffold của MVC) */
+    .admin-body .table thead th,
+    .admin-body .table > tbody:first-child > tr:first-child > th {
+        background: var(--ad-surface-2);
+        color: var(--ad-muted);
+        font-weight: 600;
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+/* Phân trang */
+.admin-body .pagination .page-link {
+    background: var(--ad-surface);
+    border-color: var(--ad-border);
+    color: var(--ad-muted);
+}
+
+.admin-body .pagination .active .page-link,
+.admin-body .pagination .active > span {
+    background: var(--ad-text);
+    border-color: var(--ad-text);
+    color: #0c0c0e;
+}
+
+/* ================= TRANG TỔNG QUAN ================= */
+.ad-page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+    .ad-page-head h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 0 0 4px;
+        letter-spacing: -.01em;
+    }
+
+    .ad-page-head p {
+        margin: 0;
+        color: var(--ad-muted);
+        font-size: .9rem;
+    }
+
+.ad-btn-ghost {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--ad-border);
+    border-radius: var(--ad-radius);
+    color: var(--ad-text) !important;
+    font-size: .88rem;
+    text-decoration: none;
+    transition: background .15s, border-color .15s;
+}
+
+    .ad-btn-ghost:hover {
+        background: var(--ad-surface);
+        border-color: var(--ad-border-hover);
+    }
+
+/* 4 ô số liệu tách rời nhau */
+.ad-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.ad-stat {
+    position: relative;
+    padding: 20px;
+    background: var(--ad-surface);
+    border: 1px solid var(--ad-border);
+    border-radius: var(--ad-radius);
+    text-decoration: none;
+    transition: border-color .15s, background .15s;
+}
+
+    .ad-stat:hover {
+        border-color: var(--ad-border-hover);
+        background: #18181c;
+    }
+
+.ad-stat-label {
+    display: block;
+    color: var(--ad-muted);
+    font-size: .85rem;
+    margin-bottom: 10px;
+}
+
+.ad-stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.ad-stat-link {
+    display: block;
+    margin-top: 14px;
+    font-size: .8rem;
+    color: var(--ad-faint);
+    transition: color .15s;
+}
+
+.ad-stat:hover .ad-stat-link {
+    color: #93c5fd;
+}
+
+/* Khung chung */
+.ad-panel {
+    background: var(--ad-surface);
+    border: 1px solid var(--ad-border);
+    border-radius: var(--ad-radius);
+    margin-bottom: 16px;
+}
+
+.ad-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--ad-border);
+    font-weight: 600;
+    font-size: .95rem;
+}
+
+    .ad-panel-head small {
+        color: var(--ad-muted);
+        font-weight: 400;
+        font-size: .82rem;
+    }
+
+.ad-panel-body {
+    padding: 24px 20px;
+}
+
+/* Doanh thu */
+.ad-revenue {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 22px 20px;
+}
+
+.ad-revenue-label {
+    color: var(--ad-muted);
+    font-size: .9rem;
+}
+
+.ad-revenue strong {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+    .ad-revenue strong small {
+        font-size: 1rem;
+        color: var(--ad-muted);
+        font-weight: 500;
+        margin-left: 4px;
+    }
+
+/* Biểu đồ: vành khuyên bên trái + bảng chú thích bên phải */
+.ad-chart {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    align-items: center;
+    gap: 40px;
+}
+
+.ad-donut {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+    .ad-donut > div:first-child {
+        width: 100%;
+        height: 100%;
+    }
+
+/* Số tổng nằm giữa lỗ của vành khuyên */
+.ad-donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+    .ad-donut-center strong {
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .ad-donut-center span {
+        margin-top: 6px;
+        color: var(--ad-muted);
+        font-size: .82rem;
+    }
+
+.ad-legend {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+
+    .ad-legend td {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--ad-border);
+    }
+
+    .ad-legend tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .ad-legend .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        margin-right: 10px;
+    }
+
+    .ad-legend .num {
+        text-align: right;
+        color: var(--ad-muted);
+        font-variant-numeric: tabular-nums;
+        width: 60px;
+    }
+
+.ad-empty {
+    margin: 0;
+    color: var(--ad-muted);
+}
+
+/* ================= CHÂN TRANG ================= */
+.ad-footer {
+    border-top: 1px solid var(--ad-border);
+    padding: 18px 0;
+    color: var(--ad-faint);
+    font-size: .82rem;
+}
+
+/* ================= MÀN HÌNH NHỎ ================= */
+@media (max-width: 991.98px) {
+    .ad-topbar .navbar-nav {
+        padding: 8px 0;
+    }
+
+    .ad-user {
+        margin: 4px 0 14px;
+    }
+
+    .ad-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ad-chart {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ad-donut {
+        width: 260px;
+        height: 260px;
+    }
+}
+
+/* ================= FORM THÊM / SỬA ================= */
+/* Site.css giới hạn ô nhập 280px (template MVC cũ): bỏ giới hạn trong khu admin */
+.admin-body input,
+.admin-body select,
+.admin-body textarea {
+    max-width: none;
+}
+
+/* Form có các nhóm .mb-3 (Thêm/Sửa/Xóa) -> đặt vào khung tối, rộng vừa phải.
+   Form tìm kiếm / đổi trạng thái dùng .row nên không bị ảnh hưởng */
+.admin-main form:has(> .mb-3:not(.row)) {
+    max-width: 760px;
+    padding: 24px;
+    background: var(--ad-surface);
+    border: 1px solid var(--ad-border);
+    border-radius: var(--ad-radius);
+    margin-bottom: 24px;
+}
+
+    /* Hàng nút cuối form: tách khỏi các ô nhập bằng đường kẻ */
+    .admin-main form:has(> .mb-3:not(.row)) > .mb-3:last-child {
+        margin: 24px -24px -24px !important; /* mb-3 của Bootstrap dùng !important nên phải đè lại */
+        padding: 16px 24px;
+        border-top: 1px solid var(--ad-border);
+        background: #121215;
+        border-radius: 0 0 var(--ad-radius) var(--ad-radius);
+    }
+
+    /* Đường kẻ <hr /> có sẵn trong vài form: khung đã có viền nên ẩn đi */
+    .admin-main form:has(> .mb-3:not(.row)) > hr {
+        display: none;
+    }
+
+/* Các nút đứng cạnh nhau có khoảng cách */
+.admin-main .mb-3 > .btn + .btn,
+.admin-main p > .btn + .btn,
+.admin-main form > .btn + .btn {
+    margin-left: 6px;
+}
+
+/* Nhãn ô nhập */
+.admin-body .form-label {
+    margin-bottom: 8px;
+    color: var(--ad-muted);
+    font-size: .85rem;
+    font-weight: 500 !important; /* các view dùng fw-bold, làm nhẹ lại */
+}
+
+.admin-body .form-control,
+.admin-body .form-select {
+    padding: 9px 12px;
+    font-size: .92rem;
+}
+
+.admin-body textarea.form-control {
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+/* Mũi tên của dropdown: Bootstrap vẽ màu đen, đổi sang xám sáng cho thấy trên nền tối */
+.admin-body .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%239b9ba4' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+    .admin-body .form-select option {
+        background: var(--ad-surface);
+        color: var(--ad-text);
+    }
+
+/* Ô chọn file ảnh: nút "Choose file" nền xám */
+.admin-body .form-control[type=file]::file-selector-button {
+    background: var(--ad-surface-2);
+    color: var(--ad-text);
+    border-color: var(--ad-border);
+}
+
+.admin-body .form-control[type=file]:hover:not(:disabled)::file-selector-button {
+    background: #26262b;
+}
+
+/* Ô số: bỏ màu sáng của nút tăng/giảm trên Chrome */
+.admin-body input[type=number] {
+    color-scheme: dark;
+}
+
+/* Dòng gợi ý dưới ô nhập */
+.admin-body .form-text,
+.admin-body .text-muted {
+    color: var(--ad-faint) !important;
+    font-size: .82rem;
+}
+
+.admin-body code {
+    color: #93c5fd;
+    background: var(--ad-surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* Báo lỗi nhập liệu */
+.admin-body .text-danger,
+.admin-body .field-validation-error {
+    color: #f87171 !important;
+    font-size: .85rem;
+}
+
+.admin-body .field-validation-error {
+    display: block;
+    margin-top: 6px;
+}
+
+.admin-body .input-validation-error {
+    border-color: rgba(248, 113, 113, .6) !important;
+}
+
+.admin-body .validation-summary-errors ul {
+    margin: 0 0 16px;
+    padding: 12px 14px 12px 32px;
+    background: rgba(248, 113, 113, .08);
+    border-left: 3px solid #f87171;
+    border-radius: var(--ad-radius);
+}
+
+/* ================= TRANG CHI TIẾT / XÓA ================= */
+/* Khung thông tin dùng bg-light (nền trắng) -> nền tối */
+.admin-body .bg-light {
+    background: var(--ad-surface) !important;
+    color: var(--ad-text);
+}
+
+.admin-body .border {
+    border-color: var(--ad-border) !important;
+}
+
+.admin-body dt {
+    color: var(--ad-muted);
+    font-weight: 500;
+    font-size: .88rem;
+}
+
+.admin-body dd {
+    margin-bottom: 12px;
+}
+
+.admin-body hr {
+    border-color: var(--ad-border);
+    opacity: 1;
+}
+
+/* Ảnh sản phẩm trong khung tối: nền trắng nhỏ quanh ảnh cho rõ */
+.admin-body .bg-light img,
+.admin-main form img {
+    background: #fff;
+    border-radius: var(--ad-radius);
+    padding: 4px;
+}
+
+/* Khung thông tin dạng .row có nền (dl.row, div.row.bg-light):
+   bỏ margin âm của .row để không tràn ra ngoài mép trang */
+.admin-body dl.row,
+.admin-body .row.bg-light {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Dòng tổng cộng cuối bảng */
+.admin-body .table tfoot th {
+    font-weight: 600;
+    background: var(--ad-surface-2);
+}
+
+/* Tiêu đề bảng màu xanh lá (table-success) -> xám */
+.admin-body .table-success {
+    --bs-table-bg: var(--ad-surface-2);
+    --bs-table-color: var(--ad-muted);
+    --bs-table-border-color: var(--ad-border);
+    --bs-table-striped-bg: var(--ad-surface-2);
+    --bs-table-hover-bg: var(--ad-surface-2);
+}
+
+.admin-body .table-bordered > :not(caption) > * > * {
+    border-color: var(--ad-border);
+}
+
+/* Thông báo không có dữ liệu / cảnh báo */
+.admin-body .alert-warning {
+    border-left: 3px solid #fbbf24;
+}
+
+.admin-body h5.alert {
+    font-size: .95rem;
+    font-weight: 500;
+}

@@ -215,6 +215,7 @@
   <ItemGroup>
     <Content Include="Content\Account.css" />
     <Content Include="Content\AdminLogin.css" />
+    <Content Include="Content\AdminTheme.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />

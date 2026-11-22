@@ -1,64 +1,79 @@
 ﻿@model HoangHaPCVN.Models.ViewModel.DashBoardVM
 
 @{
-    ViewBag.Title = "Trang chủ quản trị";
+    ViewBag.Title = "Tổng quan";
 }
 
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card text-bg-primary h-100">
-            <div class="card-body">
-                <div class="fs-6">Sản phẩm</div>
-                <div class="fs-2 fw-bold">@Model.TongSanPham</div>
-                @Html.ActionLink("Xem danh sách", "Index", "Products", null, new { @class = "text-white" })
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-success h-100">
-            <div class="card-body">
-                <div class="fs-6">Danh mục</div>
-                <div class="fs-2 fw-bold">@Model.TongDanhMuc</div>
-                @Html.ActionLink("Xem danh sách", "Index", "Categories", null, new { @class = "text-white" })
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-warning h-100">
-            <div class="card-body">
-                <div class="fs-6">Khách hàng</div>
-                <div class="fs-2 fw-bold">@Model.TongKhachHang</div>
-                @Html.ActionLink("Xem danh sách", "Index", "Customers", null, new { @class = "text-dark" })
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-danger h-100">
-            <div class="card-body">
-                <div class="fs-6">Đơn hàng</div>
-                <div class="fs-2 fw-bold">@Model.TongDonHang</div>
-                @Html.ActionLink("Xem danh sách", "Index", "Orders", null, new { @class = "text-white" })
-            </div>
-        </div>
+<div class="ad-page-head">
+    <div>
+        <h1>Tổng quan</h1>
+        <p>Số liệu cập nhật lúc @DateTime.Now.ToString("HH:mm, dd/MM/yyyy")</p>
     </div>
 </div>
 
-<div class="alert alert-info">
-    Doanh thu từ các đơn đã giao: <strong>@Model.DoanhThu.ToString("N0") đ</strong>
+@* 4 ô số liệu, bấm vào ô nào thì mở danh sách tương ứng *@
+<div class="ad-stats">
+    <a class="ad-stat" href="@Url.Action("Index", "Products")">
+        <span class="ad-stat-label">Sản phẩm</span>
+        <span class="ad-stat-value">@Model.TongSanPham</span>
+        <span class="ad-stat-link">Xem danh sách →</span>
+    </a>
+    <a class="ad-stat" href="@Url.Action("Index", "Categories")">
+        <span class="ad-stat-label">Danh mục</span>
+        <span class="ad-stat-value">@Model.TongDanhMuc</span>
+        <span class="ad-stat-link">Xem danh sách →</span>
+    </a>
+    <a class="ad-stat" href="@Url.Action("Index", "Customers")">
+        <span class="ad-stat-label">Khách hàng</span>
+        <span class="ad-stat-value">@Model.TongKhachHang</span>
+        <span class="ad-stat-link">Xem danh sách →</span>
+    </a>
+    <a class="ad-stat" href="@Url.Action("Index", "Orders")">
+        <span class="ad-stat-label">Đơn hàng</span>
+        <span class="ad-stat-value">@Model.TongDonHang</span>
+        <span class="ad-stat-link">Xem danh sách →</span>
+    </a>
+</div>
+
+<div class="ad-panel">
+    <div class="ad-revenue">
+        <span class="ad-revenue-label">Doanh thu từ các đơn đã giao</span>
+        <strong>@Model.DoanhThu.ToString("N0")<small>đ</small></strong>
+    </div>
 </div>
 
 @* Google Chart *@
-<h2 class="bg-success text-white p-2">BIỂU ĐỒ THỐNG KÊ</h2>
+<div class="ad-panel">
+    <div class="ad-panel-head">
+        Tỷ lệ sản phẩm theo danh mục
+        <small>@Model.TongDanhMuc danh mục</small>
+    </div>
+    <div class="ad-panel-body">
+        @if (Model.TongSanPham > 0)
+        {
+            <div class="ad-chart">
+                @* Bên trái: vành khuyên, tổng số sản phẩm nằm giữa lỗ *@
+                <div class="ad-donut">
+                    @* Google Chart sẽ vẽ biểu đồ vào thẻ div có id="bieuDoDanhMuc" *@
+                    <div id="bieuDoDanhMuc"></div>
+                    <div class="ad-donut-center">
+                        <strong>@Model.TongSanPham</strong>
+                        <span>sản phẩm</span>
+                    </div>
+                </div>
 
-@if (Model.TongSanPham > 0)
-{
-    @* Google Chart sẽ vẽ biểu đồ vào thẻ div có id="bieuDoDanhMuc" *@
-    <div id="bieuDoDanhMuc" style="width: 100%; height: 450px;"></div>
-}
-else
-{
-    <p class="alert alert-warning">Chưa có sản phẩm nào để thống kê.</p>
-}
+                @* Bên phải: bảng chú thích, JavaScript bên dưới sẽ điền các dòng vào *@
+                <table class="ad-legend">
+                    <tbody id="chuThich"></tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="ad-empty">Chưa có sản phẩm nào để thống kê.</p>
+        }
+    </div>
+</div>
 
 @section scripts {
     @* Thư viện Google Chart *@
@@ -66,11 +81,43 @@ else
 
     <script>
         //Chuyển dữ liệu sang JavaScript dưới dạng JSON
-        var thongKe = @Html.Raw(Json.Encode(Model.SanPhamTheoDanhMuc))
+        var thongKe = @Html.Raw(Json.Encode(Model.SanPhamTheoDanhMuc));
+
+        //Bảng màu dùng chung cho miếng chart và chấm màu trong chú thích
+        var mau = ['#3b82f6', '#60a5fa', '#22d3ee', '#2dd4bf', '#818cf8', '#c4b5fd', '#71717a',
+                   '#f472b6', '#fbbf24', '#a3e635'];
 
         //Nạp gói biểu đồ cơ bản, nạp xong thì gọi hàm veBieuDo
         google.charts.load('current', { packages: ['corechart'] });
-        google.charts.setOnLoadCallback(veBieuDo);
+        google.charts.setOnLoadCallback(function () {
+            veChuThich();
+            veBieuDo();
+        });
+
+        //Tạo bảng chú thích: chấm màu + tên danh mục | số sản phẩm | phần trăm
+        function veChuThich() {
+            var bang = document.getElementById('chuThich');
+            if (!bang) {
+                return;
+            }
+
+            var tong = 0;
+            for (var i = 0; i < thongKe.length; i++) {
+                tong += thongKe[i].SoSanPham;
+            }
+
+            var html = '';
+            for (var j = 0; j < thongKe.length; j++) {
+                var phanTram = tong > 0 ? (thongKe[j].SoSanPham * 100 / tong).toFixed(1) : 0;
+                var tenDanhMuc = $('<div>').text(thongKe[j].TenDanhMuc).html(); //Chống chèn HTML từ tên danh mục
+                html += '<tr>'
+                    + '<td><span class="dot" style="background:' + mau[j % mau.length] + '"></span>' + tenDanhMuc + '</td>'
+                    + '<td class="num">' + thongKe[j].SoSanPham + '</td>'
+                    + '<td class="num">' + phanTram + '%</td>'
+                    + '</tr>';
+            }
+            bang.innerHTML = html;
+        }
 
         function veBieuDo() {
             //Không có chỗ để vẽ (chưa có sản phẩm) thì dừng
@@ -89,10 +136,17 @@ else
                 duLieu.addRow([thongKe[i].TenDanhMuc, thongKe[i].SoSanPham]);
             }
 
-            //Tùy chỉnh chart
+            //Tùy chỉnh chart: vành khuyên phẳng trên nền tối, chú thích đã tự làm ở bảng bên cạnh
             var tuyChon = {
-                title: 'TỶ LỆ SẢN PHẨM THEO DANH MỤC',
-                is3D: true   //3D chart
+                pieHole: 0.74,                    //Lỗ giữa to để đặt số tổng vào
+                pieSliceText: 'none',             //Không ghi % trên miếng
+                pieSliceBorderColor: '#151518',   //Trùng màu nền khung để tạo khe giữa các miếng
+                backgroundColor: 'transparent',
+                legend: 'none',
+                chartArea: { left: 0, top: 0, width: '100%', height: '100%' },
+                fontName: 'Segoe UI',
+                tooltip: { text: 'both' },
+                colors: mau
             };
 
             //Vẽ chart vào thẻ div
@@ -101,4 +155,3 @@ else
         }
     </script>
 }
-

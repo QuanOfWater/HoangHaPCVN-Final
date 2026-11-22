@@ -21,7 +21,6 @@
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 0 10px;
 }
 
     /* Ở trang chủ, chiều cao từng mục menu lấy theo banner bên cạnh.
@@ -41,8 +40,8 @@
     flex: 1;
     min-width: 0;
     background-color: #fff;
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 20px;
+    padding: 16px 16px 20px;
 }
 
 /* Tiêu đề danh mục và số sản phẩm */
@@ -59,7 +58,7 @@
 .pl-title {
     margin: 0;
     font-size: 22px;
-    color: #0b3d91;
+    color: #004ba4;
 }
 
 .pl-count {
@@ -85,14 +84,14 @@
     }
 
         .pl-sort a:hover {
-            border-color: #1565c0;
-            color: #1565c0;
+            border-color: #0678db;
+            color: #0678db;
         }
 
         /* Nút sắp xếp đang chọn */
         .pl-sort a.active {
-            background-color: #1565c0;
-            border-color: #1565c0;
+            background-color: #0678db;
+            border-color: #0678db;
             color: #fff;
         }
 

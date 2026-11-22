@@ -1,61 +1,75 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    //Tên controller đang mở, dùng để tô đậm mục menu tương ứng
+    string currentController = ViewContext.RouteData.Values["controller"] as string;
+    string username = Session["Username"] as string;
+}
+@helper MenuItem(string text, string controller, string current)
+{
+    <li class="nav-item">
+        @Html.ActionLink(text, "Index", controller, new { area = "Admin" },
+                 new { @class = "nav-link" + (controller == current ? " active" : "") })
+    </li>
+}
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Quản trị HoangHaPC</title>
     @Styles.Render("~/Content/css")
     <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <link href="~/Content/AdminTheme.css?v=3" rel="stylesheet" />
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
+<body class="admin-body">
     <!-- ===== HEADER: thanh menu quản trị ===== -->
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg ad-topbar">
         <div class="container">
-            @Html.ActionLink("HoangHaPC Admin", "Index", "HomeAdmin", new { area = "Admin" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+            <a href="@Url.Action("Index", "HomeAdmin", new { area = "Admin" })" class="ad-brand">
+                <span class="ad-brand-icon"><span><img src="~/Content/img/LogoHHPC.png" alt="" /></span></span>
+                HoangHaPC Admin
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#adminMenu"
+                    aria-controls="adminMenu" aria-expanded="false" aria-label="Mở menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse">
+
+            <div class="collapse navbar-collapse" id="adminMenu">
                 <ul class="navbar-nav">
-                    <li class="nav-item">@Html.ActionLink("Home", "Index", "HomeAdmin", new { area = "Admin" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Danh mục", "Index", "Categories", new { area = "Admin" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Sản phẩm", "Index", "Products", new { area = "Admin" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Khách hàng", "Index", "Customers", new { area = "Admin" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Đơn hàng", "Index", "Orders", new { area = "Admin" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Tài khoản", "Index", "Users", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    @MenuItem("Tổng quan", "HomeAdmin", currentController)
+                    @MenuItem("Danh mục", "Categories", currentController)
+                    @MenuItem("Sản phẩm", "Products", currentController)
+                    @MenuItem("Khách hàng", "Customers", currentController)
+                    @MenuItem("Đơn hàng", "Orders", currentController)
+                    @MenuItem("Tài khoản", "Users", currentController)
                 </ul>
-                @if (Session["Username"] != null) //Bên phải thanh menu hiển thị tên người đăng nhập và đăng xuất
+
+                @if (!string.IsNullOrEmpty(username)) //Bên phải thanh menu: tên người đăng nhập và nút đăng xuất
                 {
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <span class="navbar-text me-3">Chào mừng quay trở lại, <strong>@Session["Username"]</strong></span>
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("Đăng xuất", "Logout", "Account", new { area = "Admin" }, new { @class = "nav-link" })
-                        </li>
-                    </ul>
+                    <div class="ad-user">
+                        <span class="ad-user-name" title="Đang đăng nhập">
+                            <span class="ad-avatar">@username.Substring(0, 1)</span>
+                            @username
+                        </span>
+                        <span class="ad-user-sep"></span>
+                        @Html.ActionLink("Đăng xuất", "Logout", "Account", new { area = "Admin" }, new { @class = "ad-logout" })
+                    </div>
                 }
             </div>
         </div>
     </nav>
 
-    <div class="container body-content mt-3">
-        <h1>TRANG QUẢN TRỊ</h1>
-
-        <!-- Nội dung của từng trang Admin sẽ được chèn vào đây -->
+    <!-- Nội dung của từng trang Admin sẽ được chèn vào đây -->
+    <main class="container admin-main">
         @RenderBody()
-        
-        <!-- ===== FOOTER ===== -->
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - PC Builder</p>
-            <h3>Thành viên nhóm</h3>
-            <p>Trần Hồng Quân</p>
-            <p>Lê Quang Bình</p>
-            <p>Nguyễn Hữu Mạnh Phú</p>
-        </footer>
-    </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="ad-footer">
+        <div class="container">
+            &copy; @DateTime.Now.Year PC Builder · Nhóm: Trần Hồng Quân, Lê Quang Bình, Nguyễn Hữu Mạnh Phú
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
