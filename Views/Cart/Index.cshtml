@@ -25,6 +25,11 @@
     <div class="cart-alert"><i class="fa-solid fa-circle-check"></i> @TempData["CartMessage"]</div>
 }
 
+@if (ViewBag.StockMessage != null)
+{
+    <div class="cart-alert cart-alert-warn"><i class="fa-solid fa-triangle-exclamation"></i> @ViewBag.StockMessage</div>
+}
+
 @if (!Model.Items.Any())
 {
     <div class="cart-empty">
@@ -67,13 +72,15 @@ else
                                 string anh = string.IsNullOrEmpty(item.ProductImage)
                                     ? "~/Content/images/default_img.png"
                                     : item.ProductImage;
+                                bool hetHang = item.Stock < 1;
+                                int toiDa = Math.Max(1, Math.Min(HoangHaPCVN.Models.ViewModel.Cart.MaxQuantity, item.Stock));
 
                                 @* data-total, data-qty: Tính tổng các SP được chọn *@
-                                <tr data-total="@((long)item.TotalPrice)" data-qty="@item.Quantity">
+                                <tr data-total="@((long)item.TotalPrice)" data-qty="@item.Quantity" class="@(hetHang ? "cart-row-out" : null)">
                                     <td class="col-chk">
                                         @* form="frmCheckout": Ô tick thuộc form Mua hàng ở cột bên phải *@
                                         <input type="checkbox" class="chk-item" name="ids"
-                                               value="@item.ProductID" form="frmCheckout" checked
+                                               value="@item.ProductID" form="frmCheckout" checked="@(!hetHang)" disabled="@hetHang"
                                                aria-label="Chọn mua @item.ProductName" />
                                     </td>
                                     <td class="col-img">
@@ -83,6 +90,16 @@ else
                                         <a href="@Url.Action("ProductDetail", "Home", new { area = "", id = item.ProductID })" class="cart-name">
                                             @item.ProductName
                                         </a>
+
+                                        @if (hetHang)
+                                        {
+                                            <div class="cart-stock out">Hết hàng</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="cart-stock">Còn @item.Stock sản phẩm</div>
+                                        }
+
                                     </td>
                                     <td class="col-qty">
                                         @* Nút - / + là nút gửi form *@
@@ -92,8 +109,8 @@ else
                                             <input type="hidden" name="id" value="@item.ProductID" />
                                             <button type="submit" name="change" value="-1" aria-label="Giảm">−</button>
                                             <input type="number" name="quantity" class="qty-input"
-                                                   value="@item.Quantity" min="1" max="99" aria-label="Số lượng" />
-                                            <button type="submit" name="change" value="1" aria-label="Tăng">+</button>
+                                                   value="@item.Quantity" min="1" max="@toiDa" aria-label="Số lượng" />
+                                            <button type="submit" name="change" value="1" aria-label="Tăng" disabled="@(item.Quantity >= toiDa)">+</button>
                                         }
                                     </td>
                                     <td class="col-money">@item.UnitPrice.ToString("N0", vn) đ</td>
@@ -159,7 +176,7 @@ else
             var btnMua = document.getElementById('btnMuaHang');
             var chkAll = document.getElementById('chkAll');
             var lblChonTatCa = document.getElementById('lblChonTatCa');
-            var chkItems = document.querySelectorAll('.chk-item');
+            var chkItems = document.querySelectorAll('.chk-item:not(:disabled)'); //Bỏ qua sản phẩm hết hàng
 
             //Ô chọn tất cả
             lblChonTatCa.hidden = false;

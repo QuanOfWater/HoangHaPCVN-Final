@@ -18,7 +18,7 @@ namespace HoangHaPCVN.Models
         [Display(Name = "Tên danh mục")]
         public string CategoryName { get; set; }
 
-        [StringLength(100, ErrorMessage = "Biểu tượng tối đa 100 ký tự")]
+        [StringLength(50, ErrorMessage = "Biểu tượng tối đa 50 ký tự")]
         [RegularExpression(@"^fa-[a-z]+ fa-[a-z0-9-]+$",
             ErrorMessage = "Nhập đúng dạng class Font Awesome, ví dụ: fa-solid fa-fan")]
         [Display(Name = "Biểu tượng")]

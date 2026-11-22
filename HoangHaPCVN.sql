@@ -87,4 +87,12 @@ WHERE ProductPrice < 1000 OR ProductPrice > 1000000000
    OR LEN(ProductName) < 3 OR LEN(ProductName) > 200
    OR ProductDescription IS NULL OR LTRIM(RTRIM(ProductDescription)) = '';
 
+-- Them cot Quantity vao Product
+USE HoangHaPCVN;
+GO
+ALTER TABLE [dbo].[Product]
+    ADD [Quantity] INT NOT NULL
+        CONSTRAINT [DF_Product_Quantity] DEFAULT 0
+        CONSTRAINT [CK_Product_Quantity] CHECK ([Quantity] >= 0);
+
 ALTER AUTHORIZATION ON DATABASE::HoangHaPCVN TO sa;

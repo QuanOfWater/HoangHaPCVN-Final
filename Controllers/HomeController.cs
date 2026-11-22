@@ -32,11 +32,11 @@ namespace HoangHaPCVN.Controllers
 
             var model = new HomeProductVM();
 
-            //Include: Lấy kèm danh mục và chi tiết đơn hàng (đếm số lượt mua)
+            //Chỉ lấy SP còn hàng; Include đơn hàng để tính "đã bán" (bỏ đơn bị hủy)
             var products = db.Products
                 .Include(p => p.Category)
-                .Include(p => p.OrderDetails)
-                .AsQueryable();
+                .Include(p => p.OrderDetails.Select(d => d.Order))
+                .Where(p => p.Quantity > 0);
 
             //Tìm kiếm dựa trên từ khóa tìm kiếm
             if (searchTerm != null)
@@ -68,8 +68,8 @@ namespace HoangHaPCVN.Controllers
                 foreach (var c in categories)
                 {
                     var list = db.Products
-                        .Include(p => p.OrderDetails)
-                        .Where(p => p.CategoryID == c.CategoryID)
+                        .Include(p => p.OrderDetails.Select(d => d.Order))
+                        .Where(p => p.CategoryID == c.CategoryID && p.Quantity > 0)
                         .OrderByDescending(p => p.ProductID)
                         .Take(6)
                         .ToList();
@@ -96,7 +96,9 @@ namespace HoangHaPCVN.Controllers
         public ActionResult ProductList(int? id, string sortOrder, int? page)
         {
             var model = new ProductListVM();
-            var products = db.Products.Include(p => p.OrderDetails).AsQueryable();
+            var products = db.Products
+                .Include(p => p.OrderDetails.Select(d => d.Order))
+                .Where(p => p.Quantity > 0);
 
             if (id.HasValue)
             {
@@ -159,7 +161,7 @@ namespace HoangHaPCVN.Controllers
             //Lấy SP kèm theo danh mục và chi tiết đơn hàng (để đếm số đã bán)
             Product pro = db.Products
                 .Include(p=> p.Category)
-                .Include(p=> p.OrderDetails)
+                .Include(p => p.OrderDetails.Select(d => d.Order))
                 .SingleOrDefault(p => p.ProductID == id);
 
             if (pro == null)
@@ -169,17 +171,18 @@ namespace HoangHaPCVN.Controllers
 
             //Lấy tất cả SP cùng danh mục (trừ SP đang xem hiện tại)
             var products = db.Products
-                .Include(p => p.OrderDetails)
-                .Where(p => p.CategoryID == pro.CategoryID && p.ProductID != pro.ProductID);
+                .Include(p => p.OrderDetails.Select(d => d.Order))
+                .Where(p => p.CategoryID == pro.CategoryID && p.ProductID != pro.ProductID && p.Quantity > 0);
 
             var model = new ProductDetailVM();
             model.Product = pro;
-            model.SoLuongDaBan = pro.OrderDetails.Sum(d => d.Quantity);
+            model.SoLuongDaBan = pro.DaBan; //Không tính đơn đã hủy
 
-            //Số lượng user muốn đặt mua: 1 tới 99 là max, không nhập thì mặc định là 1
+            //Số lượng muốn mua: từ 1 tới tồn kho (tối đa 99), không nhập thì mặc định 1
+            int toiDa = Math.Max(1, Math.Min(Cart.MaxQuantity, pro.Quantity));
             if (quantity.HasValue)
             {
-                model.Quantity = Math.Max(1, Math.Min(quantity.Value, 99));
+                model.Quantity = Math.Max(1, Math.Min(quantity.Value, toiDa));
             }
 
             //8 SP cùng một danh mục

@@ -7,7 +7,7 @@
         : Model.ProductImage;
 
     //Tổng số lượng đã bán = cộng só lượng ở các dòng chi tiết đơn hàng
-    int daBan = Model.OrderDetails.Sum(d => d.Quantity);
+    int daBan = Model.DaBan; //Không tính đơn đã hủy
 
     //Format theo định dạng VND
     var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");

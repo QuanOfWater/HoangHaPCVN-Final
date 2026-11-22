@@ -21,15 +21,23 @@ namespace HoangHaPCVN.Models.ViewModel
         public IPagedList<Product> SimilarProducts { get; set; }
 
         //Thêm sản phẩm: Đã có trong giỏ thì cộng thêm số lượng
+        //Stock: Tồn kho hiện tại, số lượng trong giỏ không được vượt quá
         public void AddItem(int productId, string productImage, string productName,
-            decimal unitPrice, int quantity, string category)
+            decimal unitPrice, int quantity, string category, int stock)
         {
+            int toiDa = Math.Min(MaxQuantity, stock);
+            if (toiDa < 1)
+            {
+                return; //Hết hàng thì không thêm
+            }
+
             quantity = Math.Max(1, quantity);
             var existingItem = items.FirstOrDefault(i => i.ProductID == productId);
 
             if (existingItem != null)
             {
-                existingItem.Quantity = Math.Min(existingItem.Quantity + quantity, MaxQuantity);
+                existingItem.Quantity = Math.Min(existingItem.Quantity + quantity, toiDa);
+                existingItem.Stock = stock;
             }
             else
             {
@@ -39,8 +47,9 @@ namespace HoangHaPCVN.Models.ViewModel
                     ProductImage = productImage,
                     ProductName = productName,
                     UnitPrice = unitPrice,
-                    Quantity = Math.Min(quantity, MaxQuantity),
-                    Category = category
+                    Quantity = Math.Min(quantity, toiDa),
+                    Category = category,
+                    Stock = stock
                 });
             }
         }
@@ -51,8 +60,8 @@ namespace HoangHaPCVN.Models.ViewModel
             items.RemoveAll(i => i.ProductID == productId);
         }
 
-        // Cập nhật số lượng: Nhỏ hơn một thì xóa sản phẩm khỏi giỏ
-        public void UpdateQuantity(int productId, int quantity)
+        // Cập nhật số lượng: Nhỏ hơn 1 thì xóa khỏi giỏ, lớn hơn tồn kho thì giữ ở mức tồn kho
+        public void UpdateQuantity(int productId, int quantity, int stock)
         {
             var item = items.FirstOrDefault(i => i.ProductID == productId);
             if (item == null)
@@ -64,7 +73,13 @@ namespace HoangHaPCVN.Models.ViewModel
                 RemoveItem(productId);
                 return;
             }
-            item.Quantity = Math.Min(quantity, MaxQuantity);
+            int toiDa = Math.Min(MaxQuantity, stock);
+            if (toiDa < 1)
+            {
+                return; //Hết hàng: giữ nguyên, trang giỏ sẽ báo "Hết hàng"
+            }
+            item.Quantity = Math.Min(quantity, toiDa);
+            item.Stock = stock;
         }
 
         //Tổng giá trị giỏ hàng của đơn hàng

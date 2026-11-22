@@ -7,7 +7,8 @@ using System.Data.Entity;
 using HoangHaPCVN.Filters;
 using HoangHaPCVN.Models;
 using HoangHaPCVN.Models.ViewModel;
-using PagedList; 
+using PagedList;
+using System.Data.Entity.Infrastructure;
 
 namespace HoangHaPCVN.Controllers
 {
@@ -51,8 +52,22 @@ namespace HoangHaPCVN.Controllers
                         ProductImage = p.ProductImage,
                         UnitPrice = p.ProductPrice,
                         Quantity = item.Quantity,
-                        Category = p.Category.CategoryName
+                        Category = p.Category.CategoryName,
+                        Stock = p.Quantity
                     }).ToList();
+        }
+
+        //Có món nào khách mua nhiều hơn số còn trong kho không (null = ổn)
+        private string KiemTraTonKho(List<CartItem> items)
+        {
+            var thieu = items.FirstOrDefault(i => i.Quantity > i.Stock);
+            if (thieu == null)
+            {
+                return null;
+            }
+            return thieu.Stock < 1
+                ? "\"" + thieu.ProductName + "\" đã hết hàng, vui lòng bỏ chọn sản phẩm này."
+                : "\"" + thieu.ProductName + "\" chỉ còn " + thieu.Stock + " sản phẩm, vui lòng giảm số lượng.";
         }
 
         //Điền phần hiển thị của trang Thanh toán (sản phẩm, người nhận, tổng tiền)
@@ -74,6 +89,13 @@ namespace HoangHaPCVN.Controllers
             if (!items.Any())
             {
                 TempData["CartMessage"] = "Vui lòng chọn ít nhất 1 sản phẩm để mua.";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            string loiKho = KiemTraTonKho(items);
+            if (loiKho != null)
+            {
+                TempData["CartMessage"] = loiKho;
                 return RedirectToAction("Index", "Cart");
             }
 
@@ -99,6 +121,13 @@ namespace HoangHaPCVN.Controllers
             {
                 //Giỏ đã trống (ví dụ bấm Đặt hàng 2 lần) thì không tạo đơn nữa
                 TempData["CartMessage"] = "Không còn sản phẩm nào để đặt hàng.";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            string loiKho = KiemTraTonKho(items);
+            if (loiKho != null)
+            {
+                TempData["CartMessage"] = loiKho;
                 return RedirectToAction("Index", "Cart");
             }
 
@@ -151,8 +180,24 @@ namespace HoangHaPCVN.Controllers
                     }).ToList()
                 };
 
+                //Trừ tồn kho. Sản phẩm đã được tải ở LayHangDaChon nên Find không hỏi lại DB
+                foreach (var item in items)
+                {
+                    db.Products.Find(item.ProductID).Quantity -= item.Quantity;
+                }
+
                 db.Orders.Add(order);
-                db.SaveChanges(); //Lưu Order + các OrderDetail trong 1 giao dịch
+                try
+                {
+                    //1 lần SaveChanges = 1 giao dịch: lưu đơn + chi tiết + trừ kho, lỗi thì không lưu gì
+                    db.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    //CHECK (Quantity >= 0) trong SQL chặn lại: có người vừa mua mất hàng
+                    TempData["CartMessage"] = "Một số sản phẩm vừa hết hàng trong lúc bạn đặt. Vui lòng kiểm tra lại giỏ hàng.";
+                    return RedirectToAction("Index", "Cart");
+                }
 
                 //Chỉ bỏ khỏi giỏ những sản phẩm vừa đặt, sản phẩm không tick vẫn còn
                 var cart = GetCartService().GetCart();
@@ -266,7 +311,9 @@ namespace HoangHaPCVN.Controllers
         public ActionResult CancelOrder(int id, string returnUrl)
         {
             int customerId = (int)Session["CustomerID"];
-            var order = db.Orders.SingleOrDefault(o => o.OrderID == id && o.CustomerID == customerId);
+            var order = db.Orders
+                .Include(o => o.OrderDetails.Select(d => d.Product))
+                .SingleOrDefault(o => o.OrderID == id && o.CustomerID == customerId);
             if (order == null)
             {
                 return HttpNotFound();
@@ -276,6 +323,11 @@ namespace HoangHaPCVN.Controllers
             if (OrderStatuses.CanCancel(order.OrderStatus))
             {
                 order.OrderStatus = "Đã hủy";
+                //Trả hàng của đơn về kho
+                foreach (var d in order.OrderDetails)
+                {
+                    d.Product.Quantity += d.Quantity;
+                }
                 db.SaveChanges();
                 TempData["AccountMessage"] = "Đã hủy đơn hàng #" + id + ".";
             }
@@ -307,15 +359,23 @@ namespace HoangHaPCVN.Controllers
             }
 
             var cart = GetCartService().GetCart();
+            var hetHang = new List<string>();
             foreach (var d in order.OrderDetails)
             {
                 var p = d.Product;
-                //Dùng GIÁ HIỆN TẠI trong DB, không dùng giá cũ lưu trong đơn
+                if (p.Quantity < 1)
+                {
+                    hetHang.Add(p.ProductName); //Hết hàng thì bỏ qua
+                    continue;
+                }
+                //Dùng GIÁ HIỆN TẠI trong DB, số lượng không vượt tồn kho
                 cart.AddItem(p.ProductID, p.ProductImage, p.ProductName, p.ProductPrice,
-                    d.Quantity, p.Category.CategoryName);
+                    d.Quantity, p.Category.CategoryName, p.Quantity);
             }
 
-            TempData["CartMessage"] = "Đã thêm các sản phẩm của đơn #" + id + " vào giỏ hàng (theo giá hiện tại).";
+            TempData["CartMessage"] = hetHang.Any()
+                ? "Đã thêm các sản phẩm còn hàng của đơn #" + id + ". Đã hết hàng: " + string.Join(", ", hetHang) + "."
+                : "Đã thêm các sản phẩm của đơn #" + id + " vào giỏ hàng (theo giá hiện tại).";
             return RedirectToAction("Index", "Cart");
         }
 

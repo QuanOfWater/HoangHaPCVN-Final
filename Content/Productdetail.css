@@ -223,3 +223,20 @@
 [hidden] {
     display: none !important;
 }
+
+/* Tồn kho */
+.pd-stock-ok {
+    color: #1a9c4a;
+}
+
+.pd-stock-out {
+    color: #d9302c;
+    font-weight: bold;
+}
+
+.pd-out {
+    margin-bottom: 6px;
+    color: #d9302c;
+    font-size: 18px;
+    font-weight: bold;
+}

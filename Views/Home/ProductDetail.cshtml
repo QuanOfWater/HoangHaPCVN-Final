@@ -7,6 +7,8 @@
         ? "~/Content/images/default_img.png"
         : Model.Product.ProductImage;
     string linkDanhMuc = Url.Action("ProductList", "Home", new { area = "", id = Model.Product.CategoryID });
+    bool hetHang = Model.Product.Quantity < 1;
+    int toiDa = Math.Max(1, Math.Min(HoangHaPCVN.Models.ViewModel.Cart.MaxQuantity, Model.Product.Quantity));
 }
 
 @section styles {
@@ -37,6 +39,14 @@
         <h1 class="pd-name">@Model.Product.ProductName</h1>
 
         <div class="pd-meta">
+            @if (hetHang)
+            {
+                <span class="pd-stock-out">Hết hàng</span>
+            }
+            else
+            {
+                <span>Còn lại: <strong class="pd-stock-ok">@Model.Product.Quantity</strong></span>
+            }
             <span>Đã bán: <strong>@Model.SoLuongDaBan</strong></span>
             <span>Danh mục: <a href="@linkDanhMuc">@Model.Product.Category.CategoryName</a></span>
         </div>
@@ -51,40 +61,22 @@
     </div>
 
     @* Khối bên phải: phần chọn mua + bán chạy cùng danh mục *@
-    <div class="pd-side">
-        <div class="pd-box pd-buy">
-
-            @* Phần tạm tính.
-                Có JavaScript: bấm - / + hoặc gõ số là tạm tính đổi ngay.
-                Không có JavaScript: bấm "Cập nhật" để tải lại trang và tính lại. *@
-            <form method="get" action="@Url.Action("ProductDetail", "Home", new { area = "", id = Model.Product.ProductID })">
-                <label for="quantity">Số lượng</label>
-                <div class="pd-qty">
-                    <button type="button" class="pd-qty-btn" id="btnGiam" aria-label="Giảm số lượng" hidden>−</button>
-                    <input type="number" id="quantity" name="quantity" value="@Model.Quantity" min="1" max="99" />
-                    <button type="button" class="pd-qty-btn" id="btnTang" aria-label="Tăng số lượng" hidden>+</button>
-                    <button type="submit" class="pd-btn-outline" id="btnCapNhat">Cập nhật</button>
-                </div>
-            </form>
-
-            <div class="pd-subtotal">
-                Tạm tính: <strong id="tamTinh">@Model.EstimatedValue.ToString("N0", vn) đ</strong>
-            </div>
-
-            @* Thêm vào giỏ hàng: gửi mã sản phẩm và số lượng sang CartController *@
-            <form method="post" action="@Url.Action("AddToCart", "Cart", new { area = "" })">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="productId" value="@Model.Product.ProductID" />
-                <input type="hidden" id="qtyHidden" name="quantity" value="@Model.Quantity" />
-                <button type="submit" class="pd-btn-primary">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-                </button>
-            </form>
-        </div>
-
-        @* Khối Top Deals: bán chạy cùng danh mục *@
-        @Html.Partial("_PVTopProduct", Model)
+<div class="pd-side">
+    <div class="pd-box pd-buy">
+        @if (hetHang)
+        {
+            <p class="pd-out">Sản phẩm tạm hết hàng</p>
+            <p>Vui lòng quay lại sau hoặc xem các sản phẩm tương tự.</p>
+        }
+        else
+        {
+            
+        }
     </div>
+
+    @* Khối Top Deals: bán chạy cùng danh mục *@
+    @Html.Partial("_PVTopProduct", Model)
+</div>
 </div>
 
 @section scripts {
@@ -100,6 +92,10 @@
             var btnGiam    = document.getElementById('btnGiam');
             var btnTang    = document.getElementById('btnTang');
             var btnCapNhat = document.getElementById('btnCapNhat');
+                        if (!oSoLuong) {
+                return; //Hết hàng: không có ô số lượng thì không làm gì
+            }
+            var toiDa = @toiDa; //Tồn kho (tối đa 99)
 
             //Hiện nút + / -
             btnGiam.hidden = false;
@@ -110,7 +106,7 @@
             function laySoLuong() {
                 var soLuong = parseInt(oSoLuong.value, 10);
                 if (isNaN(soLuong) || soLuong < 1) { soLuong = 1; }
-                if (soLuong > 99) { soLuong = 99; }
+                if (soLuong > toiDa) { soLuong = toiDa; }
                 return soLuong;
             }
 
@@ -135,8 +131,8 @@
                 oSoLuong.value = Math.max(1, laySoLuong() - 1);
                 capNhatTamTinh();
             });
-            btnTang.addEventListener('click', function () {
-                oSoLuong.value = Math.min(99, laySoLuong() + 1);
+            btnTang.addEventListener('click', function() {
+                oSoLuong.value = Math.min(toiDa, laySoLuong() + 1)
                 capNhatTamTinh();
             });
         })();

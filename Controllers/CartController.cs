@@ -30,12 +30,54 @@ namespace HoangHaPCVN.Controllers
             var categoryNames = cart.Items.Select(i => i.Category).Distinct().ToList();
             var productIds = cart.Items.Select(i => i.ProductID).ToList();
 
-            //Sản phẩm tương tự: Cùng danh mục với sản phẩm trong giỏ, nhưng chưa có trong giỏ
+            var tonKho = db.Products
+                .Where(p => productIds.Contains(p.ProductID))
+                .Select(p => new { p.ProductID, p.Quantity })
+                .ToDictionary(x => x.ProductID, x => x.Quantity);
+
+            bool daGiam = false;
+            foreach (var item in cart.Items)
+            {
+                item.Stock = tonKho.ContainsKey(item.ProductID) ? tonKho[item.ProductID] : 0;
+                if (item.Stock > 0 && item.Quantity > item.Stock)
+                {
+                    item.Quantity = item.Stock; //Giảm về đúng số còn trong kho
+                    daGiam = true;
+                }
+            }
+            if (daGiam)
+            {
+                ViewBag.StockMessage = "Một số sản phẩm trong giỏ đã được giảm số lượng cho khớp với tồn kho.";
+            }
+
+            //Làm mới kho của từng món trong giỏ
+            var tonKho = db.Products
+                .Where(p => productIds.Contains(p.ProductID))
+                .Select(p => new { p.ProductID, p.Quantity })
+                .ToDictionary(x => x.ProductID, x => x.Quantity);
+
+            bool daGiam = false;
+            foreach (var item in cart.Items)
+            {
+                item.Stock = tonKho.ContainsKey(item.ProductID) ? tonKho[item.ProductID] : 0;
+                if (item.Stock > 0 && item.Quantity > item.Stock)
+                {
+                    item.Quantity = item.Stock; //Giảm về đúng số còn trong kho
+                    daGiam = true;
+                }
+            }
+            if (daGiam)
+            {
+                ViewBag.StockMessage = "Một số sản phẩm trong giỏ đã được giảm số lượng cho khớp với tồn kho.";
+            }
+
+            //Sản phẩm tương tự: Cùng danh mục, chưa có trong giỏ, CÒN HÀNG
             var similarProducts = db.Products
                 .Include(p => p.Category)
-                .Include(p => p.OrderDetails)
+                .Include(p => p.OrderDetails.Select(d => d.Order))
                 .Where(p => categoryNames.Contains(p.Category.CategoryName)
-                         && !productIds.Contains(p.ProductID))
+                         && !productIds.Contains(p.ProductID)
+                         && p.Quantity > 0)
                 .OrderByDescending(p => p.ProductID);
 
             //Phân trang
@@ -61,10 +103,30 @@ namespace HoangHaPCVN.Controllers
                 return HttpNotFound();
             }
 
-            GetCartService().GetCart().AddItem(product.ProductID, product.ProductImage,
-                product.ProductName, product.ProductPrice, quantity, product.Category.CategoryName);
+            if (product.Quantity < 1)
+            {
+                TempData["CartMessage"] = "\"" + product.ProductName + "\" đã hết hàng.";
+                return RedirectToAction("Index");
+            }
 
-            TempData["CartMessage"] = "Đã thêm \"" + product.ProductName + "\" vào giỏ hàng.";
+            var cart = GetCartService().GetCart();
+            var daCo = cart.Items.FirstOrDefault(i => i.ProductID == productId);
+            int truocKhiThem = daCo == null ? 0 : daCo.Quantity;
+
+            cart.AddItem(product.ProductID, product.ProductImage, product.ProductName,
+                product.ProductPrice, quantity, product.Category.CategoryName, product.Quantity);
+
+            int sauKhiThem = cart.Items.First(i => i.ProductID == productId).Quantity;
+            if (sauKhiThem < truocKhiThem + Math.Max(1, quantity))
+            {
+                //Không thêm đủ vì chạm giới hạn tồn kho (hoặc 99)
+                TempData["CartMessage"] = "Số lượng \"" + product.ProductName + "\" trong giỏ đã đạt tối đa ("
+                                        + sauKhiThem + "). Kho còn " + product.Quantity + " sản phẩm.";
+            }
+            else
+            {
+                TempData["CartMessage"] = "Đã thêm \"" + product.ProductName + "\" vào giỏ hàng.";
+            }
             return RedirectToAction("Index");
         }
 

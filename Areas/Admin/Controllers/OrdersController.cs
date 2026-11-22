@@ -76,7 +76,9 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateStatus(int id, string orderStatus)
         {
-            Order order = db.Orders.Find(id);
+            Order order = db.Orders
+                .Include(o => o.OrderDetails.Select(d => d.Product))
+                .SingleOrDefault(o => o.OrderID == id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -85,6 +87,22 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             //Chỉ nhận trạng thái có trong danh sách
             if (OrderStatuses.All.Contains(orderStatus))
             {
+                //Đơn đã hủy thì hàng đã về kho, không cho đổi lại
+                if (order.OrderStatus == "Đã hủy" && orderStatus != "Đã hủy")
+                {
+                    TempData["Message"] = "Đơn hàng đã hủy nên không thể đổi sang trạng thái khác.";
+                    return RedirectToAction("Details", new { id = id });
+                }
+
+                //Chuyển sang "Đã hủy": trả hàng về kho
+                if (orderStatus == "Đã hủy" && order.OrderStatus != "Đã hủy")
+                {
+                    foreach (var d in order.OrderDetails)
+                    {
+                        d.Product.Quantity += d.Quantity;
+                    }
+                }
+
                 order.OrderStatus = orderStatus;
                 db.SaveChanges();
                 TempData["Message"] = "Đã cập nhật trạng thái đơn hàng thành \"" + orderStatus + "\".";

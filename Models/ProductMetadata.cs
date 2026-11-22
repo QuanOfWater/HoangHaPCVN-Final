@@ -1,13 +1,27 @@
-﻿using System;
+﻿using HoangHaPCVN.Models.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
-using System.ComponentModel.DataAnnotations;
 
 namespace HoangHaPCVN.Models
 {
     [MetadataType(typeof(ProductMetadata))]
-    public partial class Product { }
+    public partial class Product 
+    {
+        [NotMapped]
+        public int DaBan
+        {
+            get
+            {
+                return OrderDetails
+                    .Where(d => !OrderStatuses.Cancelled.Contains(d.Order.OrderStatus))
+                    .Sum(d => d.Quantity);
+            }
+        }
+    }
     public class ProductMetadata
     {
         [Required(ErrorMessage = "Vui lòng chọn danh mục")]

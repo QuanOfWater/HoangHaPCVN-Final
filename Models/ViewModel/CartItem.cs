@@ -16,7 +16,10 @@ namespace HoangHaPCVN.Models.ViewModel
 
         //Tên danh mục của SP (gom nhóm giỏ hàng)
         public string Category { get; set; }
-        
+
+        //Tồn kho mới nhất đọc từ DB (chỉ để hiển thị và giới hạn số lượng)
+        public int Stock { get; set; }
+
         //Tổng giá cho mỗi SP
         public decimal TotalPrice => Quantity * UnitPrice;
     }
