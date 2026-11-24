@@ -128,6 +128,16 @@ namespace HoangHaPCVN.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: Cart/RemoveFromCart
+        //Xóa 1 sản phẩm khỏi giỏ
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveFromCart(int id)
+        {
+            GetCartService().GetCart().RemoveItem(id);
+            return RedirectToAction("Index");
+        }
+
         // POST: Cart/ClearCart
         //Làm trống giỏ hàng
         [HttpPost]

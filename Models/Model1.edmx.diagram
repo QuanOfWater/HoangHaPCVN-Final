@@ -10,7 +10,7 @@
         <EntityTypeShape EntityType="HoangHaPCVNModel.Order" Width="1.5" PointX="5.125" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="HoangHaPCVNModel.OrderDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="HoangHaPCVNModel.Product" Width="1.5" PointX="3.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="HoangHaPCVNModel.sysdiagram" Width="1.5" PointX="8.625" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="HoangHaPCVNModel.sysdiagram" Width="1.5" PointX="7.375" PointY="2.5" IsExpanded="true" />
         <EntityTypeShape EntityType="HoangHaPCVNModel.User" Width="1.5" PointX="1.5" PointY="4.25" IsExpanded="true" />
         <AssociationConnector Association="HoangHaPCVNModel.FK_Pro_Category" ManuallyRouted="false" />
         <AssociationConnector Association="HoangHaPCVNModel.FK__Order__CustomerI__5441852A" ManuallyRouted="false" />
