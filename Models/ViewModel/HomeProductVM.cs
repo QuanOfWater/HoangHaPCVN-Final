@@ -17,7 +17,7 @@ namespace HoangHaPCVN.Models.ViewModel
         //Danh sách 10 SP bán chạy nhất
         public List<Product> FeaturedProducts { get; set; }
 
-        //Danh sách 20 SP ít người mua nhất + phân trang
+        //Danh sách 20 SP mới nhất + phân trang
         public IPagedList<Product> NewProducts { get; set; }
 
         //Giao diện HoangHaPC, mỗi danh mục một khối sản phẩm

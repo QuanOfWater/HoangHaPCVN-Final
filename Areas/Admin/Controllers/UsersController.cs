@@ -32,7 +32,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
                 users = users.Where(u => u.Username.Contains(searchTerm));
             }
 
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 10;
             model.Users = users.OrderBy(u => u.Username).ToPagedList(pageNumber, pageSize);
 

@@ -42,7 +42,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             }
 
             //Đơn mới nhất lên đầu, một trang có 10 đơn
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 10;
             model.Orders = orders.OrderByDescending(o => o.OrderDate).ToPagedList(pageNumber, pageSize);
 

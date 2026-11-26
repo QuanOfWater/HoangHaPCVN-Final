@@ -267,7 +267,7 @@ namespace HoangHaPCVN.Controllers
                     .Include(o => o.OrderDetails.Select(d => d.Product))
                     .OrderByDescending(o => o.OrderDate)
                     .ThenByDescending(o => o.OrderID)
-                    .ToPagedList(page ?? 1, 5)
+                    .ToPagedList(Math.Max(1, page ?? 1), 5)
             };
             return View(model);
         }

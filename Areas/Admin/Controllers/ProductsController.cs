@@ -76,7 +76,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             model.SortOrder = sortOrder;
 
             //Phân trang
-            int pageNumber = page ?? 1; //Mặc địch là 1, trang hiện tại
+            int pageNumber = Math.Max(1, page ?? 1); //Mặc địch là 1, trang hiện tại
             int pageSize = 10; //Số sản phẩm mỗi trang
 
             model.Products = products.ToPagedList(pageNumber, pageSize);

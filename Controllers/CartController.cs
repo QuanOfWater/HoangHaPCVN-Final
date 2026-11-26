@@ -60,7 +60,7 @@ namespace HoangHaPCVN.Controllers
                 .OrderByDescending(p => p.ProductID);
 
             //Phân trang
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 6;
             cart.SimilarProducts = similarProducts.ToPagedList(pageNumber, pageSize);
 

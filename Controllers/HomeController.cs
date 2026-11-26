@@ -53,11 +53,11 @@ namespace HoangHaPCVN.Controllers
                 .Take(10)
                 .ToList();
 
-            //Lấy ra 20 SP ít người mua nhất + phân trang (6 SP mỗi trang)
-            int pageNumber = page ?? 1;
+            //Lấy ra 20 SP mới nhất + phân trang (6 SP mỗi trang)
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 6;
             model.NewProducts = products
-                .OrderBy(p => p.ProductID)
+                .OrderByDescending(p => p.ProductID)
                 .Take(20)
                 .ToPagedList(pageNumber, pageSize);
 
@@ -141,7 +141,7 @@ namespace HoangHaPCVN.Controllers
             model.SortOrder = sortOrder;
 
             //Phân trang: 12 SP một trang theo tỉ lệ 4 ô x 3 hàng
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 12;
             model.Products = products.ToPagedList(pageNumber, pageSize);
 
@@ -189,7 +189,7 @@ namespace HoangHaPCVN.Controllers
             model.RelatedProducts = products.OrderBy(p => p.ProductID).Take(8).ToList();
 
             //8 SP bán chạy nhất cùng một danh mục, phân trang 3 SP mỗi trang
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 3;
             model.TopProducts = products
                 .OrderByDescending(p => p.OrderDetails.Count())

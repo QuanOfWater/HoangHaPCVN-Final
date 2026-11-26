@@ -51,7 +51,7 @@ namespace HoangHaPCVN.Areas.Admin.Controllers
             model.SortOrder = sortOrder;
 
             //Phân trang: 1 trang 10 khách hàng
-            int pageNumber = page ?? 1;
+            int pageNumber = Math.Max(1, page ?? 1);
             int pageSize = 10;
             model.Customers = customers.ToPagedList(pageNumber, pageSize);
 
