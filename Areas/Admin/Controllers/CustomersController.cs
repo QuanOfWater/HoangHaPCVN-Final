@@ -1,16 +1,18 @@
-﻿using HoangHaPCVN.Models;
+﻿using HoangHaPCVN.Areas.Admin.Filters;
+using HoangHaPCVN.Models;
 using HoangHaPCVN.Models.ViewModel;
 using PagedList;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity;
 
 namespace HoangHaPCVN.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class CustomersController : Controller
     {
         private HoangHaPCVNEntities db = new HoangHaPCVNEntities();

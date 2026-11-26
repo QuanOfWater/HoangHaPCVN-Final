@@ -96,3 +96,19 @@ ALTER TABLE [dbo].[Product]
         CONSTRAINT [CK_Product_Quantity] CHECK ([Quantity] >= 0);
 
 ALTER AUTHORIZATION ON DATABASE::HoangHaPCVN TO sa;
+SELECT Username, [Password]
+FROM [dbo].[User]
+WHERE UserRole = N'Customer';
+
+USE HoangHaPCVN;
+GO
+
+SELECT u.Username,
+       u.[Password],
+       c.CustomerID,
+       c.CustomerName,
+       c.CustomerPhone,
+       c.CustomerEmail
+FROM [dbo].[User] u
+JOIN [dbo].[Customer] c ON u.Username = c.Username
+WHERE u.UserRole = N'Customer';
